@@ -14,7 +14,7 @@ export type PropertyRentalExemptionResult = {
   status: 'exempt' | 'not_exempt_under_supported_rule' | 'manual_review';
   treatmentCode: string;
   legalBasis: string;
-  sourceIds: string[];
+  sourceIds: readonly string[];
   reason: string;
   notice: string;
 };

@@ -1,0 +1,69 @@
+{
+  "checkedAt": "2026-09-01T04:59:01.282Z",
+  "repository": "Patrik2020/vida-vat-platform",
+  "totals": {
+    "sources": 7,
+    "bootstrap": 6,
+    "unchanged": 0,
+    "changed": 0,
+    "errors": 1
+  },
+  "results": [
+    {
+      "sourceId": "HU-AFA-ACT",
+      "status": "error",
+      "previousSha256": null,
+      "currentSha256": null,
+      "issueCreated": true,
+      "message": "fetch failed"
+    },
+    {
+      "sourceId": "HU-NAV-VAT-INDEX",
+      "status": "bootstrap",
+      "previousSha256": null,
+      "currentSha256": "d4fc5897125b3fa7328608b2c3475b16166663ed836b5739461002b5958db0ee",
+      "issueCreated": false,
+      "message": "Initial observation recorded without opening a change issue."
+    },
+    {
+      "sourceId": "HU-NAV-INFO-2026",
+      "status": "bootstrap",
+      "previousSha256": null,
+      "currentSha256": "5cb9d3cf01811a59caba6de1e8465193f821dafac62645b7ab543e3452fd5a71",
+      "issueCreated": false,
+      "message": "Initial observation recorded without opening a change issue."
+    },
+    {
+      "sourceId": "EU-VIDA-OVERVIEW",
+      "status": "bootstrap",
+      "previousSha256": null,
+      "currentSha256": "1753319fd13f6d1dc24cb8ce80aab770d4be7bb7f4cdd426cce75c06f942889f",
+      "issueCreated": false,
+      "message": "Initial observation recorded without opening a change issue."
+    },
+    {
+      "sourceId": "EU-VIDA-DIR-2025-516",
+      "status": "bootstrap",
+      "previousSha256": null,
+      "currentSha256": "d6634283ed06df6befe9574dce011c9909c66d3f77c37df75557ad12266d0ca5",
+      "issueCreated": false,
+      "message": "Initial observation recorded without opening a change issue."
+    },
+    {
+      "sourceId": "EU-VIDA-REG-2025-517",
+      "status": "bootstrap",
+      "previousSha256": null,
+      "currentSha256": "51e17e9281fcdbe973f63dc5896754b46c862f891eddda2215aa82670f205304",
+      "issueCreated": false,
+      "message": "Initial observation recorded without opening a change issue."
+    },
+    {
+      "sourceId": "EU-VIDA-IMPL-2025-518",
+      "status": "bootstrap",
+      "previousSha256": null,
+      "currentSha256": "6497aba8bd4c491ded4b2171f424d3ddec3d60ca8be6f9906c8616284b4df6a5",
+      "issueCreated": false,
+      "message": "Initial observation recorded without opening a change issue."
+    }
+  ]
+}

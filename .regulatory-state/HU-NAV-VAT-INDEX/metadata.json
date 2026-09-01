@@ -1,0 +1,9 @@
+{
+  "sourceId": "HU-NAV-VAT-INDEX",
+  "fetchedAt": "2026-09-01T04:59:01.282Z",
+  "finalUrl": "https://nav.gov.hu/ado/afa",
+  "httpStatus": 200,
+  "contentType": "text/html;charset=UTF-8",
+  "sha256": "d4fc5897125b3fa7328608b2c3475b16166663ed836b5739461002b5958db0ee",
+  "normalizedCharacters": 21124
+}

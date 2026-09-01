@@ -1,0 +1,190 @@
+VAT in the Digital Age (ViDA) - Taxation and Customs Union
+Skip to main content
+en
+Select your language
+Close
+EU official languages
+bg български
+es español
+cs čeština
+da dansk
+de Deutsch
+et eesti
+el ελληνικά
+en English
+fr français
+ga Gaeilge
+hr hrvatski
+it italiano
+lv latviešu
+lt lietuvių
+hu magyar
+mt Malti
+nl Nederlands
+pl polski
+pt português
+ro română
+sk slovenčina
+sl slovenščina
+fi suomi
+sv svenska
+Other languages
+ar العربية
+ja 日本語
+tr türkçe
+uk yкраїнська
+zh 中文
+Search
+Search
+Taxation and Customs Union
+Menu
+Close
+Menu
+Back
+Previous items Next items
+Home
+About us
+Directorate-General for Taxation and Customs Union
+Application of EU Law
+EU funding for customs and tax
+Transparency Portal
+Events
+Tenders and Grants
+Glossary
+Contact us
+See all
+Taxation
+Value Added Tax (VAT)
+Excise Duties
+Business Taxation
+Personal Taxation
+Other taxes
+Outermost regions
+Tax Transparency and Cooperation
+Economic Analysis
+National Tax Administrations
+EU Training
+See all
+Customs
+Rules of origin for goods
+Customs Controls
+EU Training
+Authorised Economic Operator (AEO)
+Prohibitions and Restrictions
+Customs Procedures for import and export
+EU Customs Union: facts and figures
+Union Customs code
+Customs security
+International affairs
+National customs administrations
+Electronic customs
+See all
+CBAM
+CBAM archive
+CBAM communication and news
+CBAM definitive regime
+CBAM legislation and guidance
+CBAM Registry
+CBAM sectors
+Price of CBAM certificates
+Verification of CBAM emissions
+See all
+Online services
+Online services and databases for Customs
+Online services and databases for Taxation
+See all
+News
+Home
+...
+Taxation
+Value Added Tax (VAT)
+VAT in the Digital Age (ViDA)
+VAT in the Digital Age (ViDA)
+A package to modernise and improve the EU’s VAT system
+VAT in the Digital Age
+Package
+Page contents
+Page contents
+The VAT in the Digital Age (ViDA) package was adopted on 11 March 2025 following re-consultation of the European Parliament and will be rolled out progressively until January 2035.
+Upon entry into force (14 April 2025), Member States are able to introduce mandatory e-invoicing under specific conditions, and improvements were made to the Import One-Stop-Shop (IOSS) framework to enhance the control tools.
+Effective by 1 January 2027, minor legislative clarifications will impact users of the One-Stop Shop (OSS) and IOSS schemes. From July 1, 2028, platforms in short-term accommodation rental and passenger transport by road must comply with new deemed supplier measures, while the Single VAT Registration reforms and mandatory reverse charge for non-identified suppliers will start.
+Digital Reporting Requirements will affect cross-border B2B transactions from 1 July 2030. By 1 January 2035, Member States with a domestic digital real-time transaction reporting obligation must align their systems with the EU model and standards, marking the final phase of this comprehensive ViDA package.
+The ViDA package was published in the Official Journal of the European Union under the L-series on 25 March 2025.
+Legal acts:
+Directive - EU - 2025/516
+Regulation - EU - 2025/517
+Implementing regulation - EU - 2025/518
+Real-time Digital Reporting Requirements (DRR)
+The new system introduces real-time digital reporting for cross-border trade, based on e-invoicing. It will give Member States the valuable granular information they need to step up the fight against VAT fraud, especially carousel fraud.
+The move to e-invoicing will help reduce VAT fraud by up to €11 billion a year and bring down administrative and compliance costs for EU traders by over €4.1 billion per year over the next ten years. It ensures that, in time, existing national systems converge across the EU and paves the way for EU countries that wish to introduce national digital reporting systems for domestic trade.
+Updated rules for the platform economy
+Under the new rules, platforms facilitating supplies in the passenger transport by road and short-term accommodation rental sectors will become responsible for collecting and remitting VAT to tax authorities when the suppliers using the platform do not, for example because they are a small business or individual providers.
+Together with other clarifications, this will ensure a uniform approach across all EU countries and contribute to a more level playing field between online and traditional short-term accommodation rental services and passenger transport services by road. It will also simplify life for SMEs who currently need to understand and comply with the VAT rules, often in different EU countries.
+Single VAT Registration (SVR)
+Building on the already existing ‘VAT One Stop Shop’ (OSS) model for e-commerce, the new rules will allow more businesses selling to consumers in another EU country to fulfil their VAT obligations via an online portal in one EU country. The SVR part includes improvements to the OSS processes (e.g. new correction mechanism), improvements for control purposes (e.g., IOSS (Import One Stop Shop) additional information before import, IOSS monthly listings per Member State of consumption), introduced a transfer of own goods module and ensures alignments to new legislation and schemes (e.g., interplay with the SME scheme).
+Latest news
+28 Jul 2026
+Commission Implementing Regulation (EU) 2026/1869
+The Regulation updates the detailed rules for the VAT special schemes and introduces the new transfer of own goods scheme under the Single VAT Registration (SVR) pillar of the ViDA package.
+24 Jul 2026
+Revised Explanatory Notes and OSS guidelines
+Revised Explanatory Notes and OSS guidelines have been published on 24 July to reflect the changes as from 1 January 2027 introduced by the Single VAT Registration (SVR) pillar of the ViDA package.
+13 May 2026
+VAT in the Digital Age implementation – Work programme for 2026
+The document provides an outline of the main activities that are tentatively planned under the current Multiannual Financial Framework in 2026 (and early 2027) for the implementation of ViDA
+28 Oct 2025
+Implementation Dialogue
+On Tuesday 28 October, Commissioner Wopke Hoekstra hosted a strategic dialogue on the VAT in the Digital Age (ViDA) package.
+24 Sep 2025
+Implementation Strategy
+This implementation strategy sets out the actions that the Commission will deploy to support businesses and Member States with the implementation of the VAT in the Digital Age (ViDA) package.
+Background
+11 Mar 2025
+Adoption of the VAT in the Digital Age package
+The VAT in the Digital Age (ViDA) package has been adopted on 11 March 2025 following reconsultation of the European Parliament and will be rolled out progressively until January 2035.
+08 Dec 2024
+Proposal by the European Commission of the VAT in the Digital Age Package
+On 8 December 2024, The Commission adopted its proposed VAT in the Digital Age (ViDA) reforms to modernise the European Union’s Value Added Tax (VAT) system and address the challenges posed by digitalisation.
+Implementation
+General publications 13 May 2026
+VAT in the Digital Age implementation – Work programme for 2026
+General publications 24 September 2025
+Implementation Strategy - VAT in the Digital Age
+Timeline VAT in the Digital Age
+Text version
+Immediately on entry into force of ViDA package: Member States can introduce obligatory e-invoicing under certain conditions. Improvements to Member States' controls of the Import One-Stop-Shop (IOSS)
+From 1 January 2027: small clarifications impacting those using the One-Stop Shop schemes (OSS and IOSS).
+From 1 July 2028: deemed supplier measure for short-term accommodation rental and passenger transport platforms (Member States can delay implementation until 1 January 2030). Single VAT Registration elements come into effect:
+Extension of the OSS schemes
+Mandatory reverse charge for non-identified suppliers
+From 1 July 2030: digital Reporting Requirements measures coming into effect - main impact on businesses making cross border B2B supplies.
+By 1 January 2035: deadline for aligning domestic digital real-time transaction-based reporting obligations with the EU system.
+Related links
+VAT Gap Report
+Taxation and Customs Union
+This site is managed by:
+Directorate-General for Taxation and Customs Union
+Bluesky
+LinkedIn
+YouTube
+About us
+Glossary
+Newsletter
+Related links
+VAT e-Commerce - One Stop Shop
+VAT rules for small enterprises – SME scheme
+Have your say
+Follow the European Commission
+Mastodon
+LinkedIn
+Bluesky
+Facebook
+Youtube
+Other
+Contact us
+Report an IT vulnerability
+Languages on our websites
+Cookies
+Privacy policy
+Legal notice
+Accessibility

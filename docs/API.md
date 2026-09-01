@@ -2,11 +2,18 @@
 
 Base path: `/v1/hu/vat`
 
-Current ruleset: `HU-VAT-2026-003`
+Current ruleset: `HU-VAT-2026-004`
 
 Current regulatory verification window: through `2026-09-01`.
 
 The MVP is deliberately fail-closed. Requests that require rules after the latest verified date, or classifications that cannot be proven from supported facts, are rejected or returned as `manual_review`.
+
+## API contract and developer UI
+
+- OpenAPI 3.0 document: `GET /openapi.json`
+- Swagger UI: `GET /docs`
+
+The OpenAPI document is the current machine-readable Phase 1 contract. Runtime validation remains implemented with Zod; contract/runtime parity is covered by API integration tests and should remain a release gate as the API grows.
 
 ## GET `/rates`
 
@@ -120,6 +127,7 @@ Example result:
 
 ```json
 {
+  "rulesetId": "HU-VAT-2026-004",
   "netAmount": "100.00",
   "vatAmount": "27.00",
   "grossAmount": "127.00"
@@ -168,7 +176,9 @@ This endpoint currently covers only the explicitly modelled domestic constructio
 
 ## POST `/exemptions/aam/threshold`
 
-Checks the 2026 domestic small-business VAT exemption threshold for an existing business.
+Evaluates the 2026 Hungarian alanyi adómentesség turnover threshold. The caller must supply turnover values already calculated under Áfa tv. 188. §, including the statutory inclusions/exclusions; the MVP does not derive those values from raw transactions yet.
+
+### Existing taxpayer
 
 ```json
 {
@@ -181,27 +191,89 @@ Checks the 2026 domestic small-business VAT exemption threshold for an existing 
 }
 ```
 
-The 2026 threshold is `20000000` HUF. Possible statuses include:
+For an existing taxpayer, the 2026 annual threshold is `20000000` HUF and the response uses `thresholdMode: "annual"`.
+
+### Taxpayer registered during 2026 — Áfa tv. 189. §
+
+```json
+{
+  "effectiveDate": "2026-09-01",
+  "establishedBefore2026": false,
+  "registrationDate": "2026-07-01",
+  "valuesCalculatedUnderSection188": true,
+  "priorYearRelevantDomesticTurnoverHuf": "0",
+  "currentYearExpectedRelevantDomesticTurnoverHuf": "10000000",
+  "currentYearActualRelevantDomesticTurnoverHuf": "5000000"
+}
+```
+
+For a taxpayer registered on 2026-07-01, the evaluator counts 184 calendar days from registration through 31 December, inclusive. The annual 20,000,000 HUF threshold is therefore compared as the exact fraction:
+
+`20,000,000 × 184 / 365`
+
+The response exposes `thresholdHuf: "10082191"` as the whole-forint floor for display, but **eligibility is not decided using that rounded display value**. The engine compares integer cross-products against the exact fraction, so a one-forint boundary cannot be distorted by floating-point or display rounding.
+
+Example response fields:
+
+```json
+{
+  "rulesetId": "HU-VAT-2026-004",
+  "status": "eligible_within_threshold",
+  "thresholdMode": "time_proportional",
+  "annualThresholdHuf": "20000000",
+  "thresholdHuf": "10082191",
+  "registrationDate": "2026-07-01",
+  "activeDays": 184,
+  "daysInYear": 365,
+  "thresholdExact": {
+    "numeratorHufDays": "3680000000",
+    "denominatorDays": "365"
+  }
+}
+```
+
+If `establishedBefore2026` is `false` but `registrationDate` is omitted, the evaluator returns `manual_review`. A registration date outside 2026, or later than `effectiveDate`, is rejected.
+
+Possible statuses include:
 
 - `eligible_within_threshold`;
 - `not_eligible_for_choice`;
 - `threshold_exceeded`;
 - `manual_review`.
 
-The caller must supply turnover values already calculated according to Áfa tv. 188. §, including the statutory exclusions. The MVP does not yet calculate those exclusions from raw transactions.
+The endpoint does not yet determine the exact transaction ending the exemption, later re-election restrictions, or every special exclusion from raw transaction data.
 
-Newly registered businesses currently return `manual_review` because the Áfa tv. 189. § time-proportional threshold logic is not yet implemented.
+## Error contract
 
-The endpoint also does not yet determine the exact transaction ending the exemption or later re-election restrictions.
+Validation and domain failures use a stable envelope:
 
-## Error behavior
+```json
+{
+  "error": {
+    "code": "invalid_request",
+    "message": "Request validation failed",
+    "requestId": "req-1",
+    "details": []
+  }
+}
+```
 
 Typical HTTP behavior:
 
 - `400` — malformed or incomplete input;
 - `422` — syntactically valid request that cannot be processed under the currently verified rules, including unsupported effective dates.
 
-A formal versioned error schema remains a Phase 1 hardening task.
+Current error codes:
+
+- `invalid_request`;
+- `unsupported_effective_date`;
+- `classification_failed`;
+- `calculation_failed`;
+- `tax_point_failed`;
+- `reverse_charge_evaluation_failed`;
+- `aam_threshold_evaluation_failed`.
+
+The `requestId` is included so a future commercial platform can correlate client-visible errors with logs and support/audit records.
 
 ## Compliance boundary
 

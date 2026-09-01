@@ -27,7 +27,7 @@ Primary ViDA legal acts:
 
 ## Hungary VAT API — Phase 1 MVP
 
-The current Hungary ruleset is `HU-VAT-2026-003`, verified through **2026-09-01**.
+The current Hungary ruleset is `HU-VAT-2026-004`, verified through **2026-09-01**.
 
 Implemented foundations:
 
@@ -39,11 +39,14 @@ Implemented foundations:
 - 0% qualifying prescription and human magistral medicine classification from 2026-09-01;
 - supported 18% product subsets with both statutory-description and VTSZ checks;
 - supported 2026 5% domesticated-cattle product subset with VTSZ and product-condition checks;
-- 2026 AAM 20,000,000 HUF threshold evaluator for existing businesses using caller-supplied Áfa tv. 188. § turnover values;
+- 2026 AAM 20,000,000 HUF annual threshold evaluator;
+- Áfa tv. 189. § time-proportional AAM threshold handling for taxpayers registered during 2026;
 - exact decimal VAT arithmetic from net or gross values;
 - taxable, exempt and reverse-charge computational treatments;
 - Áfa tv. 58. § periodic-settlement tax-point resolver;
 - domestic construction reverse-charge evaluator;
+- stable API error envelope with request IDs;
+- machine-readable OpenAPI 3.0 contract and Swagger UI;
 - unit and Fastify integration tests.
 
 ### Fail-closed classification
@@ -52,11 +55,11 @@ The API does **not** infer a standard 27% rate when facts are insufficient. Unsu
 
 This is intentional. Hungarian reduced rates frequently depend on statutory product descriptions, VTSZ/KN classification and transaction-specific facts.
 
-The AAM evaluator is similarly bounded: newly registered businesses currently return `manual_review` because the Áfa tv. 189. § time-proportional threshold logic has not yet been separately modelled.
+The AAM evaluator follows the same principle. For taxpayers registered during 2026, `registrationDate` is required and the annual threshold is prorated over the calendar days from registration through 31 December, inclusive. The eligibility decision uses the exact fraction rather than a rounded display threshold. If the caller cannot confirm that supplied turnover values already follow Áfa tv. 188. §, the result remains `manual_review`.
 
 ## Automated regulatory monitoring
 
-The repository now contains a separate regulatory-monitor package and scheduled GitHub Actions workflow.
+The repository contains a separate regulatory-monitor package and scheduled GitHub Actions workflow.
 
 It watches the current Áfa tv., NAV VAT discovery/guidance pages, the European Commission ViDA implementation page and the three core 2025 ViDA legal acts on EUR-Lex.
 
@@ -104,7 +107,12 @@ pnpm regulatory:check
 
 The API defaults to `http://localhost:3000`.
 
-Current endpoints:
+Developer contract surfaces:
+
+- Swagger UI: `GET /docs`
+- OpenAPI document: `GET /openapi.json`
+
+Current business endpoints:
 
 - `GET /health`
 - `GET /v1/hu/vat/rates?effectiveDate=2026-09-01`
@@ -133,4 +141,4 @@ The software is infrastructure and does not replace professional tax or legal ad
 
 **Phase 1 — Hungary VAT API MVP in active development.**
 
-The deterministic core is functional, the first reduced-rate/AAM modules are live, and regulatory-source monitoring is now automated with human approval retained for every production rule change. Remaining Phase 1 work focuses on broader 5%/18% mappings, fuller exemption models, Áfa tv. 189. § new-business AAM handling, API schema/OpenAPI hardening, official-example fixtures and production-grade error/version contracts.
+The deterministic core is functional, the first reduced-rate/AAM modules are live, Áfa tv. 189. § new-business AAM handling is implemented, the API now has a machine-readable contract and stable error envelope, and regulatory-source monitoring is automated with human approval retained for every production rule change. Remaining Phase 1 work focuses on broader 5%/18% mappings, fuller exemption models, deeper reverse-charge coverage, official-example fixtures, and invoice-level rounding/currency rules.

@@ -27,7 +27,7 @@ Primary ViDA legal acts:
 
 ## Hungary VAT API — Phase 1 MVP
 
-The current Hungary ruleset is `HU-VAT-2026-004`, verified through **2026-09-01**.
+The current Hungary ruleset is `HU-VAT-2026-005`, verified through **2026-09-01**.
 
 Implemented foundations:
 
@@ -41,6 +41,9 @@ Implemented foundations:
 - supported 2026 5% domesticated-cattle product subset with VTSZ and product-condition checks;
 - 2026 AAM 20,000,000 HUF annual threshold evaluator;
 - Áfa tv. 189. § time-proportional AAM threshold handling for taxpayers registered during 2026;
+- bounded Áfa tv. 85–86. § activity-exemption evaluator for supported healthcare, dental, education, insurance, credit and payment/financial cases;
+- explicit exclusion handling for debt collection and portfolio management in the supported financial exemption paths;
+- property-rental exemption evaluator covering Áfa tv. 86. § (1) l), the 86. § (2) statutory exceptions and confirmed 88. § taxation elections;
 - exact decimal VAT arithmetic from net or gross values;
 - taxable, exempt and reverse-charge computational treatments;
 - Áfa tv. 58. § periodic-settlement tax-point resolver;
@@ -53,9 +56,9 @@ Implemented foundations:
 
 The API does **not** infer a standard 27% rate when facts are insufficient. Unsupported or unproven reduced/zero-rate cases return `manual_review` instead.
 
-This is intentional. Hungarian reduced rates frequently depend on statutory product descriptions, VTSZ/KN classification and transaction-specific facts.
+The same principle applies to exemptions. An activity evaluator returning `not_exempt_under_supported_rule` means only that the specific modelled exemption does not apply; it does **not** silently assign a fallback VAT rate or rule out another exemption.
 
-The AAM evaluator follows the same principle. For taxpayers registered during 2026, `registrationDate` is required and the annual threshold is prorated over the calendar days from registration through 31 December, inclusive. The eligibility decision uses the exact fraction rather than a rounded display threshold. If the caller cannot confirm that supplied turnover values already follow Áfa tv. 188. §, the result remains `manual_review`.
+The AAM evaluator also remains separate from activity-specific exemptions. For taxpayers registered during 2026, `registrationDate` is required and the annual threshold is prorated over the calendar days from registration through 31 December, inclusive. The eligibility decision uses the exact fraction rather than a rounded display threshold.
 
 ## Automated regulatory monitoring
 
@@ -121,6 +124,8 @@ Current business endpoints:
 - `POST /v1/hu/vat/tax-point/periodic`
 - `POST /v1/hu/vat/reverse-charge/domestic-construction`
 - `POST /v1/hu/vat/exemptions/aam/threshold`
+- `POST /v1/hu/vat/exemptions/activity`
+- `POST /v1/hu/vat/exemptions/property-rental`
 
 See `docs/API.md` for request/response examples and current MVP limitations.
 
@@ -141,4 +146,4 @@ The software is infrastructure and does not replace professional tax or legal ad
 
 **Phase 1 — Hungary VAT API MVP in active development.**
 
-The deterministic core is functional, the first reduced-rate/AAM modules are live, Áfa tv. 189. § new-business AAM handling is implemented, the API now has a machine-readable contract and stable error envelope, and regulatory-source monitoring is automated with human approval retained for every production rule change. Remaining Phase 1 work focuses on broader 5%/18% mappings, fuller exemption models, deeper reverse-charge coverage, official-example fixtures, and invoice-level rounding/currency rules.
+The deterministic core, AAM §188–189 foundation, first activity/property exemptions, API contract and regulatory monitoring are functional. Remaining Phase 1 work focuses on broader 5%/18% mappings, additional exemption and reverse-charge cases, official-example fixtures, and invoice-level rounding/currency rules.

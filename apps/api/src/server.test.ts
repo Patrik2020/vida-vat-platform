@@ -12,10 +12,10 @@ describe('Hungary VAT API Phase 1', () => {
     expect(response.json().rulesetId).toBe('HU-VAT-2026-004');
   });
 
-  it('publishes the OpenAPI 3.1 contract and Swagger JSON', async () => {
+  it('publishes the OpenAPI 3.0 contract and Swagger JSON', async () => {
     const direct = await app().inject({ method: 'GET', url: '/openapi.json' });
     expect(direct.statusCode).toBe(200);
-    expect(direct.json()).toMatchObject({ openapi: '3.1.0', info: { version: '0.4.0' } });
+    expect(direct.json()).toMatchObject({ openapi: '3.0.3', info: { version: '0.4.0' } });
 
     const swagger = await app().inject({ method: 'GET', url: '/docs/json' });
     expect(swagger.statusCode).toBe(200);

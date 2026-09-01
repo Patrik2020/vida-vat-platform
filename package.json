@@ -9,7 +9,7 @@
   "scripts": {
     "build": "pnpm -r build",
     "test": "pnpm -r test",
-    "typecheck": "pnpm -r typecheck",
+    "typecheck": "pnpm --filter @vida/rules-hu build && pnpm --filter @vida/rules-hu typecheck && pnpm --filter @vida/api typecheck",
     "dev": "pnpm --filter @vida/rules-hu build && pnpm --filter @vida/api dev"
   }
 }

@@ -31,9 +31,9 @@ Relevant Phase 1 provisions include:
 - 82. § (2) and Annex 3 — 5% reduced rate;
 - 82. § (3) and Annex 3/A — 18% reduced rate;
 - 85. § — public-interest activity exemptions, including supported healthcare, dental and education cases and regulatory permit/qualification conditions;
-- 86. § — specific-nature exemptions, including supported insurance, credit/payment/financial services and property rental; debt collection and portfolio-management exclusions are modelled where applicable;
-- 88. § — option to make otherwise exempt property transactions taxable, with the current MVP modelling the property-rental election and non-residential-only scope;
-- 142. § — domestic reverse-charge cases and conditions;
+- 86. § — specific-nature exemptions, including supported insurance, credit/payment/financial services, property rental and property sales; the property-sale evaluator models j)–k), including ja)–jc) and building-plot exceptions;
+- 88. § — option to make otherwise exempt property transactions taxable, with the current MVP modelling separate sale/rental elections and non-residential-only scope;
+- 142. § — domestic reverse-charge cases and conditions, including supported construction and §88-elected property-sale paths;
 - 188. § — domestic small-business VAT exemption turnover threshold and turnover-value basis;
 - 189. § — election and time-proportional threshold condition for taxpayers registering during the tax year.
 
@@ -48,6 +48,9 @@ Relevant Phase 1 provisions include:
 - periodic-settlement guidance: https://nav.gov.hu/pfile/file?path=%2Fado%2Fafa%2FTajekoztato_-_Idoszakos_elszamolasu_ugyletekre_vonatkozo_szabalyozas_valtozasa
 - 2026 small-business VAT exemption threshold guidance: https://nav.gov.hu/ado/afa/Emelkedik_az_alanyi_adomentesseg_ertekhatara
 - 2026 NAV information booklet on property rental, confirming the §86 property-rental exemption, §86 (2) exceptions, §88 taxation-election choices and the time-proportional AAM principle for a taxpayer starting during the year: https://nav.gov.hu/pfile/file?path=%2Fugyfeliranytu%2Fnezzen-utana%2Finf_fuz%2F2026%2F10.-Ingatlan-berbeadasanak-es-egyeb-hasznositasanak-adozasa-2026.02.03
+- 2023/8 tax question, reproducing and applying the current §86 (1) j) ja)–jc) built-property tests: https://nav.gov.hu/ado/adozasi_kerdes/2023-8_-_Berelt_ingatlanon_vegzett_beruhazassal_kapcsolatos_egyes_afakerdesek
+- NAV guidance on §88 property-sale/rental taxation elections and the five-year lock-in: https://nav.gov.hu/ado/afa/ingatlan_121220
+- NAV guidance on §142 (1) e) reverse charge for otherwise exempt property sales made taxable by election: https://nav.gov.hu/print/ado/afa/afa_ingatlan_120524
 
 ## Exemption implementation boundary
 
@@ -58,7 +61,21 @@ The first §85–86 evaluator is intentionally bounded. It automates only fact p
 - supported insurance/credit/payment cases do not imply that every financial service is exempt;
 - debt collection and portfolio management are explicitly prevented from being treated as exempt through the supported payment/financial path;
 - a result of `not_exempt_under_supported_rule` never means “27% automatically”; another exemption, rate or treatment may still require classification;
-- AAM is a separate taxpayer-level overlay and is not silently mixed into the activity-specific property-rental decision.
+- AAM is a separate taxpayer-level overlay and is not silently mixed into activity-specific property-rental or property-sale decisions;
+- property-sale exemption/taxability is kept separate from VAT-rate classification and the person liable for VAT;
+- mandatory-taxable new property and building plots are not routed through the §142 (1) e) reverse-charge path, which applies to §86 (1) j)–k) transactions made taxable by a §88 election.
+
+## Property-sale implementation convention
+
+For built property, the API treats the sale as mandatorily taxable under the supported §86 (1) j) path when:
+
+- first intended use has not occurred;
+- the sale is before the second calendar anniversary of the legally relevant first-occupancy permit, acknowledgement or authority-certificate date; or
+- a qualifying purpose or independent-unit-count change has occurred and the sale is before the second calendar anniversary of its authority-certificate date.
+
+On the second anniversary itself, the statutory wording “two years have not yet elapsed” no longer applies in this evaluator. Calendar-year addition clamps leap-day evidence dates to the last valid day of the target February.
+
+For undeveloped property, the caller must confirm whether the land meets the statutory building-plot classification. A building plot is mandatory-taxable under the supported rule; other undeveloped property is activity-exempt unless a confirmed applicable §88 election overrides that exemption.
 
 ## AAM §189 implementation convention
 

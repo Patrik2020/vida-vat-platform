@@ -27,7 +27,7 @@ Primary ViDA legal acts:
 
 ## Hungary VAT API — Phase 1 MVP
 
-The current Hungary ruleset is `HU-VAT-2026-005`, verified through **2026-09-01**.
+The current Hungary ruleset is `HU-VAT-2026-006`, verified through **2026-09-01**.
 
 Implemented foundations:
 
@@ -44,10 +44,12 @@ Implemented foundations:
 - bounded Áfa tv. 85–86. § activity-exemption evaluator for supported healthcare, dental, education, insurance, credit and payment/financial cases;
 - explicit exclusion handling for debt collection and portfolio management in the supported financial exemption paths;
 - property-rental exemption evaluator covering Áfa tv. 86. § (1) l), the 86. § (2) statutory exceptions and confirmed 88. § taxation elections;
+- property-sale evaluator covering old/new built property, the exact two-year tests, qualifying purpose/unit-count changes, building plots and confirmed 88. § taxation elections;
 - exact decimal VAT arithmetic from net or gross values;
 - taxable, exempt and reverse-charge computational treatments;
 - Áfa tv. 58. § periodic-settlement tax-point resolver;
 - domestic construction reverse-charge evaluator;
+- domestic property-sale reverse-charge evaluator for §86 (1) j)–k) sales made taxable by a §88 election, with explicit party-status checks;
 - stable API error envelope with request IDs;
 - machine-readable OpenAPI 3.0 contract and Swagger UI;
 - unit and Fastify integration tests.
@@ -123,9 +125,11 @@ Current business endpoints:
 - `POST /v1/hu/vat/calculate`
 - `POST /v1/hu/vat/tax-point/periodic`
 - `POST /v1/hu/vat/reverse-charge/domestic-construction`
+- `POST /v1/hu/vat/reverse-charge/property-sale`
 - `POST /v1/hu/vat/exemptions/aam/threshold`
 - `POST /v1/hu/vat/exemptions/activity`
 - `POST /v1/hu/vat/exemptions/property-rental`
+- `POST /v1/hu/vat/exemptions/property-sale`
 
 See `docs/API.md` for request/response examples and current MVP limitations.
 
@@ -146,4 +150,4 @@ The software is infrastructure and does not replace professional tax or legal ad
 
 **Phase 1 — Hungary VAT API MVP in active development.**
 
-The deterministic core, AAM §188–189 foundation, first activity/property exemptions, API contract and regulatory monitoring are functional. Remaining Phase 1 work focuses on broader 5%/18% mappings, additional exemption and reverse-charge cases, official-example fixtures, and invoice-level rounding/currency rules.
+The deterministic core, AAM §188–189 foundation, first activity/property exemptions, property-sale treatment and reverse-charge paths, API contract and regulatory monitoring are functional. Remaining Phase 1 work focuses on broader 5%/18% mappings, additional exemption and reverse-charge cases, official-example fixtures, and invoice-level rounding/currency rules.

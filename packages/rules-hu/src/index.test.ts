@@ -6,6 +6,8 @@ import {
   evaluateAamThreshold2026,
   evaluateActivityExemption,
   evaluateDomesticConstructionReverseCharge,
+  evaluatePropertySaleExemption,
+  evaluatePropertySaleReverseCharge,
   evaluatePropertyRentalExemption,
   getHungaryVatRates,
   resolvePeriodicTaxPoint
@@ -14,7 +16,7 @@ import {
 describe('Hungary VAT Phase 1 rules', () => {
   it('exposes 0, 5, 18 and 27 percent rates for 2026', () => {
     const result = getHungaryVatRates('2026-09-01');
-    expect(result.rulesetId).toBe('HU-VAT-2026-005');
+    expect(result.rulesetId).toBe('HU-VAT-2026-006');
     expect(result.rates.map((entry) => entry.rate)).toEqual([27, 18, 5, 0]);
   });
 
@@ -62,7 +64,7 @@ describe('Hungary VAT Phase 1 rules', () => {
     expect(evaluateActivityExemption({
       effectiveDate: '2026-09-01', kind: 'human_healthcare', serviceIsHumanHealthcare: true, providerActsInHealthcareCapacity: true,
       permitRequired: true, permitHeld: true, qualificationRequired: true, qualifiedPersonAvailable: true
-    })).toMatchObject({ rulesetId: 'HU-VAT-2026-005', status: 'exempt', exemptionCode: 'HU_85_1_C_HEALTHCARE' });
+    })).toMatchObject({ rulesetId: 'HU-VAT-2026-006', status: 'exempt', exemptionCode: 'HU_85_1_C_HEALTHCARE' });
 
     expect(evaluateActivityExemption({
       effectiveDate: '2026-09-01', kind: 'human_healthcare', serviceIsHumanHealthcare: true, providerActsInHealthcareCapacity: true,
@@ -92,7 +94,7 @@ describe('Hungary VAT Phase 1 rules', () => {
     expect(evaluatePropertyRentalExemption({
       effectiveDate: '2026-09-01', rentalKind: 'ordinary', propertyResidential: true,
       taxableElectionScope: 'none', taxableElectionDeclaredAndEffective: false
-    })).toMatchObject({ rulesetId: 'HU-VAT-2026-005', status: 'exempt', treatmentCode: 'HU_86_1_L_PROPERTY_RENTAL_EXEMPT' });
+    })).toMatchObject({ rulesetId: 'HU-VAT-2026-006', status: 'exempt', treatmentCode: 'HU_86_1_L_PROPERTY_RENTAL_EXEMPT' });
   });
 
   it('recognises the statutory property-rental exceptions', () => {
@@ -113,11 +115,118 @@ describe('Hungary VAT Phase 1 rules', () => {
     }).status).toBe('exempt');
   });
 
+  it('treats built property before first occupancy and building plots as mandatorily taxable', () => {
+    expect(evaluatePropertySaleExemption({
+      effectiveDate: '2026-09-01', propertyKind: 'built', propertyResidential: true,
+      firstOccupancy: { status: 'not_occurred' }, qualifyingUseOrUnitChange: { status: 'none' },
+      sellerDomesticVatRegistered: true, taxableElectionScope: 'none', taxableElectionDeclaredAndEffective: false
+    })).toMatchObject({
+      rulesetId: 'HU-VAT-2026-006', status: 'not_exempt_under_supported_rule', treatment: 'mandatory_taxable',
+      treatmentCode: 'HU_86_1_JA_NEW_PROPERTY_MANDATORY_TAXABLE', propertyClassification: 'new_built_property'
+    });
+
+    expect(evaluatePropertySaleExemption({
+      effectiveDate: '2026-09-01', propertyKind: 'undeveloped', buildingPlot: true,
+      sellerDomesticVatRegistered: true, taxableElectionScope: 'none', taxableElectionDeclaredAndEffective: false
+    })).toMatchObject({
+      treatment: 'mandatory_taxable', treatmentCode: 'HU_86_1_K_BUILDING_PLOT_MANDATORY_TAXABLE', propertyClassification: 'building_plot'
+    });
+  });
+
+  it('uses an exact two-calendar-year boundary for first occupancy', () => {
+    const common = {
+      propertyKind: 'built' as const, propertyResidential: true,
+      firstOccupancy: { status: 'occurred' as const, statutoryEvidenceDate: '2024-09-01' },
+      qualifyingUseOrUnitChange: { status: 'none' as const }, sellerDomesticVatRegistered: true,
+      taxableElectionScope: 'none' as const, taxableElectionDeclaredAndEffective: false
+    };
+
+    expect(evaluatePropertySaleExemption({ effectiveDate: '2026-08-31', ...common }))
+      .toMatchObject({ treatment: 'mandatory_taxable', treatmentCode: 'HU_86_1_JB_NEW_PROPERTY_WITHIN_TWO_YEARS' });
+    expect(evaluatePropertySaleExemption({ effectiveDate: '2026-09-01', ...common }))
+      .toMatchObject({ status: 'exempt', treatment: 'exempt', propertyClassification: 'old_built_property' });
+  });
+
+  it('clamps a leap-day evidence anniversary to the last valid February day', () => {
+    const common = {
+      propertyKind: 'built' as const, propertyResidential: true,
+      firstOccupancy: { status: 'occurred' as const, statutoryEvidenceDate: '2024-02-29' },
+      qualifyingUseOrUnitChange: { status: 'none' as const }, sellerDomesticVatRegistered: true,
+      taxableElectionScope: 'none' as const, taxableElectionDeclaredAndEffective: false
+    };
+
+    expect(evaluatePropertySaleExemption({ effectiveDate: '2026-02-27', ...common }).treatment).toBe('mandatory_taxable');
+    expect(evaluatePropertySaleExemption({ effectiveDate: '2026-02-28', ...common }).treatment).toBe('exempt');
+  });
+
+  it('reopens the two-year new-property window after a qualifying purpose or unit-count change', () => {
+    expect(evaluatePropertySaleExemption({
+      effectiveDate: '2026-09-01', propertyKind: 'built', propertyResidential: false,
+      firstOccupancy: { status: 'occurred', statutoryEvidenceDate: '2020-01-10' },
+      qualifyingUseOrUnitChange: { status: 'occurred', statutoryEvidenceDate: '2026-01-10' },
+      sellerDomesticVatRegistered: true, taxableElectionScope: 'none', taxableElectionDeclaredAndEffective: false
+    })).toMatchObject({
+      treatment: 'mandatory_taxable', treatmentCode: 'HU_86_1_JC_CHANGED_PROPERTY_WITHIN_TWO_YEARS', propertyClassification: 'new_built_property'
+    });
+  });
+
+  it('applies a confirmed §88 property-sale election only within its scope', () => {
+    const oldProperty = {
+      effectiveDate: '2026-09-01', propertyKind: 'built' as const,
+      firstOccupancy: { status: 'occurred' as const, statutoryEvidenceDate: '2020-01-10' },
+      qualifyingUseOrUnitChange: { status: 'none' as const }, sellerDomesticVatRegistered: true,
+      taxableElectionScope: 'non_residential_only' as const, taxableElectionDeclaredAndEffective: true
+    };
+
+    expect(evaluatePropertySaleExemption({ ...oldProperty, propertyResidential: false }))
+      .toMatchObject({ treatment: 'taxable_by_election', taxableElectionApplies: true, treatmentCode: 'HU_88_PROPERTY_SALE_TAXABLE_ELECTION' });
+    expect(evaluatePropertySaleExemption({ ...oldProperty, propertyResidential: true }))
+      .toMatchObject({ treatment: 'exempt', taxableElectionApplies: false });
+  });
+
+  it('fails closed when a property-sale election scope is not confirmed effective', () => {
+    expect(evaluatePropertySaleExemption({
+      effectiveDate: '2026-09-01', propertyKind: 'undeveloped', buildingPlot: false,
+      sellerDomesticVatRegistered: true, taxableElectionScope: 'all_property_sales', taxableElectionDeclaredAndEffective: false
+    })).toMatchObject({ status: 'manual_review', treatment: 'manual_review', treatmentCode: 'HU_88_PROPERTY_SALE_ELECTION_UNCONFIRMED' });
+  });
+
+  it('applies property-sale reverse charge only to a §88-elected sale with qualifying parties', () => {
+    const electedSale = {
+      effectiveDate: '2026-09-01', propertyKind: 'built' as const, propertyResidential: false,
+      firstOccupancy: { status: 'occurred' as const, statutoryEvidenceDate: '2020-01-10' },
+      qualifyingUseOrUnitChange: { status: 'none' as const }, sellerDomesticVatRegistered: true,
+      taxableElectionScope: 'all_property_sales' as const, taxableElectionDeclaredAndEffective: true
+    };
+
+    expect(evaluatePropertySaleReverseCharge({
+      sale: electedSale, recipientDomesticVatRegistered: true, supplierTaxPayableStatus: true, recipientTaxPayableStatus: true
+    })).toMatchObject({
+      rulesetId: 'HU-VAT-2026-006', status: 'reverse_charge', eligible: true,
+      mechanism: 'domestic_reverse_charge_property_sale', failedChecks: []
+    });
+
+    expect(evaluatePropertySaleReverseCharge({
+      sale: electedSale, recipientDomesticVatRegistered: false, supplierTaxPayableStatus: true, recipientTaxPayableStatus: true
+    })).toMatchObject({ status: 'not_reverse_charge_under_supported_rule', eligible: false, failedChecks: ['recipientDomesticVatRegistered'] });
+  });
+
+  it('does not route a mandatorily taxable new-property sale through the §142 (1) e) path', () => {
+    expect(evaluatePropertySaleReverseCharge({
+      sale: {
+        effectiveDate: '2026-09-01', propertyKind: 'built', propertyResidential: true,
+        firstOccupancy: { status: 'not_occurred' }, qualifyingUseOrUnitChange: { status: 'none' },
+        sellerDomesticVatRegistered: true, taxableElectionScope: 'none', taxableElectionDeclaredAndEffective: false
+      },
+      recipientDomesticVatRegistered: true, supplierTaxPayableStatus: true, recipientTaxPayableStatus: true
+    })).toMatchObject({ status: 'not_reverse_charge_under_supported_rule', eligible: false });
+  });
+
   it('calculates VAT exactly from net and gross amounts', () => {
     expect(calculateHungaryVat({ effectiveDate: '2026-09-01', amount: '100.00', amountType: 'net', treatment: 'taxable', rate: 27 }))
-      .toMatchObject({ rulesetId: 'HU-VAT-2026-005', netAmount: '100.00', vatAmount: '27.00', grossAmount: '127.00' });
+      .toMatchObject({ rulesetId: 'HU-VAT-2026-006', netAmount: '100.00', vatAmount: '27.00', grossAmount: '127.00' });
     expect(calculateHungaryVat({ effectiveDate: '2026-09-01', amount: '127.00', amountType: 'gross', treatment: 'taxable', rate: 27 }))
-      .toMatchObject({ rulesetId: 'HU-VAT-2026-005', netAmount: '100.00', vatAmount: '27.00', grossAmount: '127.00' });
+      .toMatchObject({ rulesetId: 'HU-VAT-2026-006', netAmount: '100.00', vatAmount: '27.00', grossAmount: '127.00' });
   });
 
   it('does not charge seller VAT for reverse charge', () => {
@@ -126,7 +235,7 @@ describe('Hungary VAT Phase 1 rules', () => {
   });
 
   it('resolves periodic tax points and fails closed outside the verification window', () => {
-    expect(resolvePeriodicTaxPoint({ periodEnd: '2026-08-31', invoiceDate: '2026-08-20', dueDate: '2026-08-25' })).toMatchObject({ rulesetId: 'HU-VAT-2026-005', taxPoint: '2026-08-20' });
+    expect(resolvePeriodicTaxPoint({ periodEnd: '2026-08-31', invoiceDate: '2026-08-20', dueDate: '2026-08-25' })).toMatchObject({ rulesetId: 'HU-VAT-2026-006', taxPoint: '2026-08-20' });
     expect(resolvePeriodicTaxPoint({ periodEnd: '2026-06-30', invoiceDate: '2026-06-30', dueDate: '2026-11-01' }).taxPoint).toBe('2026-08-29');
     expect(() => resolvePeriodicTaxPoint({ periodEnd: '2026-07-31', invoiceDate: '2026-07-31', dueDate: '2026-11-01' })).toThrow(/verified only through/);
   });
@@ -136,7 +245,7 @@ describe('Hungary VAT Phase 1 rules', () => {
       effectiveDate: '2026-09-01', supplierDomesticVatRegistered: true, recipientDomesticVatRegistered: true,
       supplierTaxPayableStatus: true, recipientTaxPayableStatus: true, constructionAssemblyWork: true,
       propertyActivity: 'transform', authorityPermitOrNotificationRequired: true, requiredDeclarationProvided: true
-    })).toMatchObject({ rulesetId: 'HU-VAT-2026-005', eligible: true });
+    })).toMatchObject({ rulesetId: 'HU-VAT-2026-006', eligible: true });
   });
 
   it('treats 19m prior-year turnover as within the 2026 AAM 20m threshold', () => {
@@ -161,7 +270,7 @@ describe('Hungary VAT Phase 1 rules', () => {
       priorYearRelevantDomesticTurnoverHuf: '0', currentYearExpectedRelevantDomesticTurnoverHuf: '10082191', currentYearActualRelevantDomesticTurnoverHuf: '5000000'
     });
     expect(result).toMatchObject({
-      rulesetId: 'HU-VAT-2026-005', status: 'eligible_within_threshold', thresholdMode: 'time_proportional', thresholdHuf: '10082191',
+      rulesetId: 'HU-VAT-2026-006', status: 'eligible_within_threshold', thresholdMode: 'time_proportional', thresholdHuf: '10082191',
       registrationDate: '2026-07-01', activeDays: 184, daysInYear: 365, choiceEligible: true
     });
   });

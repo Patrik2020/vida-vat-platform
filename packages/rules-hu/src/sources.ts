@@ -68,5 +68,26 @@ export const HUNGARY_VAT_SOURCES: RegulatorySource[] = [
     title: 'Ingatlan bérbeadásának és egyéb hasznosításának adózása 2026 — áfaszabályok',
     url: 'https://nav.gov.hu/pfile/file?path=%2Fugyfeliranytu%2Fnezzen-utana%2Finf_fuz%2F2026%2F10.-Ingatlan-berbeadasanak-es-egyeb-hasznositasanak-adozasa-2026.02.03',
     publishedAt: '2026-02-03'
+  },
+  {
+    id: 'NAV-PROPERTY-SALE-2023-8',
+    authority: 'Nemzeti Adó- és Vámhivatal',
+    title: '2023/8. Adózási kérdés - Bérelt ingatlanon végzett beruházással kapcsolatos egyes áfakérdések',
+    url: 'https://nav.gov.hu/ado/adozasi_kerdes/2023-8_-_Berelt_ingatlanon_vegzett_beruhazassal_kapcsolatos_egyes_afakerdesek',
+    publishedAt: '2023-06-20'
+  },
+  {
+    id: 'NAV-PROPERTY-SALE-ELECTION',
+    authority: 'Nemzeti Adó- és Vámhivatal',
+    title: 'Az ingatlan értékesítésre, bérbeadásra adókötelezettséget választott adóalany kijelentkezési lehetőségei az öt éves kötöttség elteltével',
+    url: 'https://nav.gov.hu/ado/afa/ingatlan_121220',
+    publishedAt: '2012-12-20'
+  },
+  {
+    id: 'NAV-PROPERTY-SALE-REVERSE-CHARGE',
+    authority: 'Nemzeti Adó- és Vámhivatal',
+    title: 'Az ingatlan értékesítésére illetve bérbeadására vonatkozóan áfakötelessé tételt választó adóalanyok státuszának közzététele',
+    url: 'https://nav.gov.hu/print/ado/afa/afa_ingatlan_120524',
+    publishedAt: '2012-05-24'
   }
 ];

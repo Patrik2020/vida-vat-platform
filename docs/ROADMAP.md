@@ -26,6 +26,8 @@
 - first formal Áfa tv. 85–86. § activity exemptions for bounded healthcare, dental, education, insurance, credit and payment/financial cases;
 - explicit debt-collection and portfolio-management exclusions in supported financial exemption paths;
 - property-rental activity exemption, §86 (2) statutory exceptions and §88 taxation-election handling;
+- property-sale treatment under §86 (1) j)–k) and §88, including old/new property, exact two-year boundaries, qualifying purpose/unit-count changes and building plots;
+- §142 (1) e) domestic reverse charge for otherwise exempt property sales made taxable by a §88 election, with party-status checks and explicit exclusion of mandatory-taxable new property/building plots;
 - stable versioned API error envelope with request IDs;
 - machine-readable OpenAPI contract and Swagger UI;
 - automated authoritative-source regulatory monitoring with a separate audit-state branch;
@@ -35,8 +37,8 @@
 ### Remaining Phase 1 work
 
 - broaden authoritative classification mappings for 5% and 18% rates;
-- expand exemption coverage beyond the currently supported §85–86 subsets, including additional public-interest/specific-nature cases and property transactions;
-- deepen reverse-charge coverage beyond the supported construction scenario;
+- expand exemption coverage beyond the currently supported §85–86 subsets, including additional public-interest and specific-nature cases;
+- deepen reverse-charge coverage beyond the supported construction and §88-elected property-sale scenarios;
 - research and formalise invoice-level rounding/aggregation and currency rules;
 - expand response schemas/examples in the OpenAPI contract as business models stabilise;
 - expanded fixtures based on official NAV examples;

@@ -1,6 +1,11 @@
 name: Regulatory Monitor
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/regulatory-monitor.yml'
+      - 'packages/regulatory-monitor/**'
   schedule:
     - cron: '17 3 * * *'
   workflow_dispatch:

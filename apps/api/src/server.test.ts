@@ -9,17 +9,19 @@ describe('Hungary VAT API Phase 1', () => {
   it('returns the current rate catalogue including 0%', async () => {
     const response = await app().inject({ method: 'GET', url: '/v1/hu/vat/rates?effectiveDate=2026-09-01' });
     expect(response.statusCode).toBe(200);
-    expect(response.json().rulesetId).toBe('HU-VAT-2026-004');
+    expect(response.json().rulesetId).toBe('HU-VAT-2026-005');
   });
 
   it('publishes the OpenAPI 3.0 contract and Swagger JSON', async () => {
     const direct = await app().inject({ method: 'GET', url: '/openapi.json' });
     expect(direct.statusCode).toBe(200);
-    expect(direct.json()).toMatchObject({ openapi: '3.0.3', info: { version: '0.4.0' } });
+    expect(direct.json()).toMatchObject({ openapi: '3.0.3', info: { version: '0.5.0' } });
 
     const swagger = await app().inject({ method: 'GET', url: '/docs/json' });
     expect(swagger.statusCode).toBe(200);
     expect(swagger.json().paths).toHaveProperty('/v1/hu/vat/exemptions/aam/threshold');
+    expect(swagger.json().paths).toHaveProperty('/v1/hu/vat/exemptions/activity');
+    expect(swagger.json().paths).toHaveProperty('/v1/hu/vat/exemptions/property-rental');
   });
 
   it('classifies supported 18% and 5% products', async () => {
@@ -36,6 +38,34 @@ describe('Hungary VAT API Phase 1', () => {
     });
     expect(five.statusCode).toBe(200);
     expect(five.json()).toMatchObject({ status: 'classified', rate: 5 });
+  });
+
+  it('evaluates a supported healthcare exemption', async () => {
+    const response = await app().inject({
+      method: 'POST', url: '/v1/hu/vat/exemptions/activity',
+      payload: {
+        effectiveDate: '2026-09-01', kind: 'human_healthcare', serviceIsHumanHealthcare: true, providerActsInHealthcareCapacity: true,
+        permitRequired: true, permitHeld: true, qualificationRequired: true, qualifiedPersonAvailable: true
+      }
+    });
+    expect(response.statusCode).toBe(200);
+    expect(response.json()).toMatchObject({ rulesetId: 'HU-VAT-2026-005', status: 'exempt', exemptionCode: 'HU_85_1_C_HEALTHCARE' });
+  });
+
+  it('evaluates property-rental exemption and statutory exceptions', async () => {
+    const ordinary = await app().inject({
+      method: 'POST', url: '/v1/hu/vat/exemptions/property-rental',
+      payload: { effectiveDate: '2026-09-01', rentalKind: 'ordinary', propertyResidential: true, taxableElectionScope: 'none', taxableElectionDeclaredAndEffective: false }
+    });
+    expect(ordinary.statusCode).toBe(200);
+    expect(ordinary.json()).toMatchObject({ status: 'exempt', treatmentCode: 'HU_86_1_L_PROPERTY_RENTAL_EXEMPT' });
+
+    const parking = await app().inject({
+      method: 'POST', url: '/v1/hu/vat/exemptions/property-rental',
+      payload: { effectiveDate: '2026-09-01', rentalKind: 'vehicle_parking', propertyResidential: false, taxableElectionScope: 'none', taxableElectionDeclaredAndEffective: false }
+    });
+    expect(parking.statusCode).toBe(200);
+    expect(parking.json()).toMatchObject({ status: 'not_exempt_under_supported_rule', legalBasis: 'Áfa tv. 86. § (2)' });
   });
 
   it('evaluates the annual 2026 AAM threshold', async () => {
@@ -60,7 +90,7 @@ describe('Hungary VAT API Phase 1', () => {
     });
     expect(response.statusCode).toBe(200);
     expect(response.json()).toMatchObject({
-      rulesetId: 'HU-VAT-2026-004', status: 'eligible_within_threshold', thresholdMode: 'time_proportional', thresholdHuf: '10082191', activeDays: 184, daysInYear: 365
+      rulesetId: 'HU-VAT-2026-005', status: 'eligible_within_threshold', thresholdMode: 'time_proportional', thresholdHuf: '10082191', activeDays: 184, daysInYear: 365
     });
   });
 
@@ -70,7 +100,7 @@ describe('Hungary VAT API Phase 1', () => {
       payload: { effectiveDate: '2026-09-01', amount: '100.00', amountType: 'net', treatment: 'taxable', rate: 27 }
     });
     expect(response.statusCode).toBe(200);
-    expect(response.json()).toMatchObject({ rulesetId: 'HU-VAT-2026-004', netAmount: '100.00', vatAmount: '27.00', grossAmount: '127.00' });
+    expect(response.json()).toMatchObject({ rulesetId: 'HU-VAT-2026-005', netAmount: '100.00', vatAmount: '27.00', grossAmount: '127.00' });
   });
 
   it('returns a stable error envelope for invalid requests', async () => {

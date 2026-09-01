@@ -9,19 +9,21 @@ describe('Hungary VAT API Phase 1', () => {
   it('returns the current rate catalogue including 0%', async () => {
     const response = await app().inject({ method: 'GET', url: '/v1/hu/vat/rates?effectiveDate=2026-09-01' });
     expect(response.statusCode).toBe(200);
-    expect(response.json().rulesetId).toBe('HU-VAT-2026-005');
+    expect(response.json().rulesetId).toBe('HU-VAT-2026-006');
   });
 
   it('publishes the OpenAPI 3.0 contract and Swagger JSON', async () => {
     const direct = await app().inject({ method: 'GET', url: '/openapi.json' });
     expect(direct.statusCode).toBe(200);
-    expect(direct.json()).toMatchObject({ openapi: '3.0.3', info: { version: '0.5.0' } });
+    expect(direct.json()).toMatchObject({ openapi: '3.0.3', info: { version: '0.6.0' } });
 
     const swagger = await app().inject({ method: 'GET', url: '/docs/json' });
     expect(swagger.statusCode).toBe(200);
     expect(swagger.json().paths).toHaveProperty('/v1/hu/vat/exemptions/aam/threshold');
     expect(swagger.json().paths).toHaveProperty('/v1/hu/vat/exemptions/activity');
     expect(swagger.json().paths).toHaveProperty('/v1/hu/vat/exemptions/property-rental');
+    expect(swagger.json().paths).toHaveProperty('/v1/hu/vat/exemptions/property-sale');
+    expect(swagger.json().paths).toHaveProperty('/v1/hu/vat/reverse-charge/property-sale');
   });
 
   it('classifies supported 18% and 5% products', async () => {
@@ -49,7 +51,7 @@ describe('Hungary VAT API Phase 1', () => {
       }
     });
     expect(response.statusCode).toBe(200);
-    expect(response.json()).toMatchObject({ rulesetId: 'HU-VAT-2026-005', status: 'exempt', exemptionCode: 'HU_85_1_C_HEALTHCARE' });
+    expect(response.json()).toMatchObject({ rulesetId: 'HU-VAT-2026-006', status: 'exempt', exemptionCode: 'HU_85_1_C_HEALTHCARE' });
   });
 
   it('evaluates property-rental exemption and statutory exceptions', async () => {
@@ -66,6 +68,81 @@ describe('Hungary VAT API Phase 1', () => {
     });
     expect(parking.statusCode).toBe(200);
     expect(parking.json()).toMatchObject({ status: 'not_exempt_under_supported_rule', legalBasis: 'Áfa tv. 86. § (2)' });
+  });
+
+  it('evaluates old, new and changed-property sale treatment', async () => {
+    const oldProperty = await app().inject({
+      method: 'POST', url: '/v1/hu/vat/exemptions/property-sale',
+      payload: {
+        effectiveDate: '2026-09-01', propertyKind: 'built', propertyResidential: true,
+        firstOccupancy: { status: 'occurred', statutoryEvidenceDate: '2020-01-10' },
+        qualifyingUseOrUnitChange: { status: 'none' }, sellerDomesticVatRegistered: true,
+        taxableElectionScope: 'none', taxableElectionDeclaredAndEffective: false
+      }
+    });
+    expect(oldProperty.statusCode).toBe(200);
+    expect(oldProperty.json()).toMatchObject({
+      rulesetId: 'HU-VAT-2026-006', status: 'exempt', treatment: 'exempt', treatmentCode: 'HU_86_1_J_OLD_BUILT_PROPERTY_EXEMPT'
+    });
+
+    const changedProperty = await app().inject({
+      method: 'POST', url: '/v1/hu/vat/exemptions/property-sale',
+      payload: {
+        effectiveDate: '2026-09-01', propertyKind: 'built', propertyResidential: false,
+        firstOccupancy: { status: 'occurred', statutoryEvidenceDate: '2020-01-10' },
+        qualifyingUseOrUnitChange: { status: 'occurred', statutoryEvidenceDate: '2026-01-10' },
+        sellerDomesticVatRegistered: true, taxableElectionScope: 'none', taxableElectionDeclaredAndEffective: false
+      }
+    });
+    expect(changedProperty.statusCode).toBe(200);
+    expect(changedProperty.json()).toMatchObject({
+      status: 'not_exempt_under_supported_rule', treatment: 'mandatory_taxable', treatmentCode: 'HU_86_1_JC_CHANGED_PROPERTY_WITHIN_TWO_YEARS'
+    });
+  });
+
+  it('returns the stable property-sale error code for impossible evidence dates', async () => {
+    const response = await app().inject({
+      method: 'POST', url: '/v1/hu/vat/exemptions/property-sale',
+      payload: {
+        effectiveDate: '2026-09-01', propertyKind: 'built', propertyResidential: true,
+        firstOccupancy: { status: 'occurred', statutoryEvidenceDate: '2026-09-02' },
+        qualifyingUseOrUnitChange: { status: 'none' }, sellerDomesticVatRegistered: true,
+        taxableElectionScope: 'none', taxableElectionDeclaredAndEffective: false
+      }
+    });
+    expect(response.statusCode).toBe(422);
+    expect(response.json()).toMatchObject({ error: { code: 'property_sale_exemption_evaluation_failed', requestId: expect.any(String) } });
+  });
+
+  it('evaluates §142 property-sale reverse charge without confusing mandatory-taxable new property', async () => {
+    const response = await app().inject({
+      method: 'POST', url: '/v1/hu/vat/reverse-charge/property-sale',
+      payload: {
+        sale: {
+          effectiveDate: '2026-09-01', propertyKind: 'undeveloped', buildingPlot: false,
+          sellerDomesticVatRegistered: true, taxableElectionScope: 'all_property_sales', taxableElectionDeclaredAndEffective: true
+        },
+        recipientDomesticVatRegistered: true, supplierTaxPayableStatus: true, recipientTaxPayableStatus: true
+      }
+    });
+    expect(response.statusCode).toBe(200);
+    expect(response.json()).toMatchObject({
+      rulesetId: 'HU-VAT-2026-006', status: 'reverse_charge', eligible: true,
+      propertySaleTreatmentCode: 'HU_88_PROPERTY_SALE_TAXABLE_ELECTION'
+    });
+
+    const buildingPlot = await app().inject({
+      method: 'POST', url: '/v1/hu/vat/reverse-charge/property-sale',
+      payload: {
+        sale: {
+          effectiveDate: '2026-09-01', propertyKind: 'undeveloped', buildingPlot: true,
+          sellerDomesticVatRegistered: true, taxableElectionScope: 'none', taxableElectionDeclaredAndEffective: false
+        },
+        recipientDomesticVatRegistered: true, supplierTaxPayableStatus: true, recipientTaxPayableStatus: true
+      }
+    });
+    expect(buildingPlot.statusCode).toBe(200);
+    expect(buildingPlot.json()).toMatchObject({ status: 'not_reverse_charge_under_supported_rule', eligible: false });
   });
 
   it('evaluates the annual 2026 AAM threshold', async () => {
@@ -90,7 +167,7 @@ describe('Hungary VAT API Phase 1', () => {
     });
     expect(response.statusCode).toBe(200);
     expect(response.json()).toMatchObject({
-      rulesetId: 'HU-VAT-2026-005', status: 'eligible_within_threshold', thresholdMode: 'time_proportional', thresholdHuf: '10082191', activeDays: 184, daysInYear: 365
+      rulesetId: 'HU-VAT-2026-006', status: 'eligible_within_threshold', thresholdMode: 'time_proportional', thresholdHuf: '10082191', activeDays: 184, daysInYear: 365
     });
   });
 
@@ -100,7 +177,7 @@ describe('Hungary VAT API Phase 1', () => {
       payload: { effectiveDate: '2026-09-01', amount: '100.00', amountType: 'net', treatment: 'taxable', rate: 27 }
     });
     expect(response.statusCode).toBe(200);
-    expect(response.json()).toMatchObject({ rulesetId: 'HU-VAT-2026-005', netAmount: '100.00', vatAmount: '27.00', grossAmount: '127.00' });
+    expect(response.json()).toMatchObject({ rulesetId: 'HU-VAT-2026-006', netAmount: '100.00', vatAmount: '27.00', grossAmount: '127.00' });
   });
 
   it('returns a stable error envelope for invalid requests', async () => {

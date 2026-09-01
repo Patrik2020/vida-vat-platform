@@ -2,7 +2,7 @@
 
 Base path: `/v1/hu/vat`
 
-Current ruleset: `HU-VAT-2026-005`
+Current ruleset: `HU-VAT-2026-006`
 
 Current regulatory verification window: through `2026-09-01`.
 
@@ -81,7 +81,7 @@ Example result:
 
 ```json
 {
-  "rulesetId": "HU-VAT-2026-005",
+  "rulesetId": "HU-VAT-2026-006",
   "effectiveDate": "2026-09-01",
   "status": "exempt",
   "exemptionCode": "HU_85_1_C_HEALTHCARE",
@@ -138,6 +138,63 @@ A confirmed non-residential-only election applies to ordinary non-residential re
 
 AAM remains a **separate taxpayer-level overlay** and is not silently mixed into this result.
 
+## POST `/exemptions/property-sale`
+
+Evaluates property-sale exemption or statutory taxability under Áfa tv. 86. § (1) j)–k) and a confirmed taxation election under 88. §.
+
+Old built-property example:
+
+```json
+{
+  "effectiveDate": "2026-09-01",
+  "propertyKind": "built",
+  "propertyResidential": true,
+  "firstOccupancy": {
+    "status": "occurred",
+    "statutoryEvidenceDate": "2020-01-10"
+  },
+  "qualifyingUseOrUnitChange": {
+    "status": "none"
+  },
+  "sellerDomesticVatRegistered": true,
+  "taxableElectionScope": "none",
+  "taxableElectionDeclaredAndEffective": false
+}
+```
+
+This returns `treatment: "exempt"` and `propertyClassification: "old_built_property"`.
+
+Supported mandatory-taxable paths are:
+
+- `HU_86_1_JA_NEW_PROPERTY_MANDATORY_TAXABLE` — first intended use has not occurred;
+- `HU_86_1_JB_NEW_PROPERTY_WITHIN_TWO_YEARS` — the sale precedes the second calendar anniversary of the legally relevant first-occupancy evidence date;
+- `HU_86_1_JC_CHANGED_PROPERTY_WITHIN_TWO_YEARS` — a qualifying purpose or independent-unit-count change occurred and the sale precedes the second anniversary of its authority-certificate date;
+- `HU_86_1_K_BUILDING_PLOT_MANDATORY_TAXABLE` — undeveloped land is confirmed as a building plot.
+
+The two-year comparison uses calendar anniversaries. On the second anniversary itself, the property is no longer classified by the corresponding “less than two years” path.
+
+For undeveloped property, use:
+
+```json
+{
+  "effectiveDate": "2026-09-01",
+  "propertyKind": "undeveloped",
+  "buildingPlot": false,
+  "sellerDomesticVatRegistered": true,
+  "taxableElectionScope": "all_property_sales",
+  "taxableElectionDeclaredAndEffective": true
+}
+```
+
+The caller is responsible for confirming the statutory building-plot classification. The engine does not infer it from a free-text address or parcel description.
+
+For otherwise exempt old built property or non-building-plot undeveloped property, the supported §88 election scopes are:
+
+- `all_property_sales`;
+- `non_residential_only`.
+
+A confirmed applicable election produces `treatment: "taxable_by_election"`. An unconfirmed or internally inconsistent election produces `manual_review`. Rate classification and the person liable for VAT remain separate decisions.
+
 ## POST `/exemptions/aam/threshold`
 
 Evaluates the 2026 Hungarian alanyi adómentesség turnover threshold. The caller supplies turnover values already calculated under Áfa tv. 188. §.
@@ -190,7 +247,7 @@ Example result:
 
 ```json
 {
-  "rulesetId": "HU-VAT-2026-005",
+  "rulesetId": "HU-VAT-2026-006",
   "netAmount": "100.00",
   "vatAmount": "27.00",
   "grossAmount": "127.00"
@@ -206,6 +263,37 @@ Resolves the supported Áfa tv. 58. § periodic-settlement tax point, including 
 ## POST `/reverse-charge/domestic-construction`
 
 Evaluates the currently supported domestic construction scenario under Áfa tv. 142. §. It does not yet cover every reverse-charge category.
+
+## POST `/reverse-charge/property-sale`
+
+Evaluates the domestic reverse-charge path in Áfa tv. 142. § (1) e) for an otherwise exempt §86 (1) j)–k) property sale that the seller made taxable through a confirmed §88 election.
+
+```json
+{
+  "sale": {
+    "effectiveDate": "2026-09-01",
+    "propertyKind": "built",
+    "propertyResidential": false,
+    "firstOccupancy": {
+      "status": "occurred",
+      "statutoryEvidenceDate": "2020-01-10"
+    },
+    "qualifyingUseOrUnitChange": {
+      "status": "none"
+    },
+    "sellerDomesticVatRegistered": true,
+    "taxableElectionScope": "all_property_sales",
+    "taxableElectionDeclaredAndEffective": true
+  },
+  "recipientDomesticVatRegistered": true,
+  "supplierTaxPayableStatus": true,
+  "recipientTaxPayableStatus": true
+}
+```
+
+This returns `status: "reverse_charge"` only when the §88 election applies and both parties satisfy the supported domestic-registration and tax-payability-status checks in §142 (3).
+
+Mandatory-taxable new property and building plots do **not** enter this evaluator's §142 (1) e) reverse-charge path. An exempt sale without an applicable election also returns `not_reverse_charge_under_supported_rule`.
 
 ## Error contract
 
@@ -232,7 +320,9 @@ Current error codes:
 - `reverse_charge_evaluation_failed`;
 - `aam_threshold_evaluation_failed`;
 - `activity_exemption_evaluation_failed`;
-- `property_rental_exemption_evaluation_failed`.
+- `property_rental_exemption_evaluation_failed`;
+- `property_sale_exemption_evaluation_failed`;
+- `property_sale_reverse_charge_evaluation_failed`.
 
 Typical HTTP behavior:
 

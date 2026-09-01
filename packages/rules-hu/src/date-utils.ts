@@ -17,3 +17,17 @@ export function addDays(value: string, days: number): string {
   date.setUTCDate(date.getUTCDate() + days);
   return date.toISOString().slice(0, 10);
 }
+
+export function addCalendarYears(value: string, years: number): string {
+  assertIsoDate(value);
+  if (!Number.isInteger(years)) {
+    throw new Error(`Calendar years must be an integer: ${years}.`);
+  }
+
+  const [year, month, day] = value.split('-').map(Number) as [number, number, number];
+  const targetYear = year + years;
+  const lastDayOfTargetMonth = new Date(Date.UTC(targetYear, month, 0)).getUTCDate();
+  const targetDay = Math.min(day, lastDayOfTargetMonth);
+
+  return `${String(targetYear).padStart(4, '0')}-${String(month).padStart(2, '0')}-${String(targetDay).padStart(2, '0')}`;
+}

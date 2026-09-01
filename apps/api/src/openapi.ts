@@ -4,7 +4,7 @@ export const OPENAPI_DOCUMENT: OpenAPIV3.Document = {
   openapi: '3.0.3',
   info: {
     title: 'ViDA Hungary VAT API',
-    version: '0.5.0',
+    version: '0.6.0',
     description: 'Hungary-first VAT/compliance API. Phase 1 is deliberately fail-closed: unsupported or unverified legal classifications require review instead of guessing.'
   },
   tags: [
@@ -76,6 +76,19 @@ export const OPENAPI_DOCUMENT: OpenAPIV3.Document = {
         responses: { '200': { description: 'Reverse-charge evaluation', content: { 'application/json': { schema: { type: 'object' } } } }, '400': { $ref: '#/components/responses/BadRequest' }, '422': { $ref: '#/components/responses/UnprocessableEntity' } }
       }
     },
+    '/v1/hu/vat/reverse-charge/property-sale': {
+      post: {
+        tags: ['Reverse charge'],
+        summary: 'Evaluate domestic reverse charge for a §88-elected property sale',
+        description: 'Applies only to an otherwise exempt §86 (1) j)–k) property sale made taxable by a confirmed §88 election, subject to the party-status conditions in §142. Mandatory-taxable new property and building plots are outside this reverse-charge path.',
+        requestBody: { required: true, content: { 'application/json': { schema: { $ref: '#/components/schemas/PropertySaleReverseChargeRequest' } } } },
+        responses: {
+          '200': { description: 'Property-sale reverse-charge evaluation', content: { 'application/json': { schema: { $ref: '#/components/schemas/PropertySaleReverseChargeResponse' } } } },
+          '400': { $ref: '#/components/responses/BadRequest' },
+          '422': { $ref: '#/components/responses/UnprocessableEntity' }
+        }
+      }
+    },
     '/v1/hu/vat/exemptions/activity': {
       post: {
         tags: ['Exemptions'],
@@ -97,6 +110,19 @@ export const OPENAPI_DOCUMENT: OpenAPIV3.Document = {
         requestBody: { required: true, content: { 'application/json': { schema: { $ref: '#/components/schemas/PropertyRentalExemptionRequest' } } } },
         responses: {
           '200': { description: 'Property-rental exemption evaluation', content: { 'application/json': { schema: { $ref: '#/components/schemas/ExemptionEvaluationResponse' } } } },
+          '400': { $ref: '#/components/responses/BadRequest' },
+          '422': { $ref: '#/components/responses/UnprocessableEntity' }
+        }
+      }
+    },
+    '/v1/hu/vat/exemptions/property-sale': {
+      post: {
+        tags: ['Exemptions'],
+        summary: 'Evaluate Hungarian property-sale exemption or statutory taxability',
+        description: 'Implements the bounded property-sale logic of Áfa tv. 86. § (1) j)–k) and 88. §, including first occupancy, the two-year tests, qualifying purpose/unit changes, building plots and taxation elections. VAT rate and reverse charge remain separate decisions.',
+        requestBody: { required: true, content: { 'application/json': { schema: { $ref: '#/components/schemas/PropertySaleExemptionRequest' } } } },
+        responses: {
+          '200': { description: 'Property-sale treatment evaluation', content: { 'application/json': { schema: { $ref: '#/components/schemas/PropertySaleEvaluationResponse' } } } },
           '400': { $ref: '#/components/responses/BadRequest' },
           '422': { $ref: '#/components/responses/UnprocessableEntity' }
         }
@@ -171,6 +197,91 @@ export const OPENAPI_DOCUMENT: OpenAPIV3.Document = {
           propertyResidential: { type: 'boolean' },
           taxableElectionScope: { type: 'string', enum: ['none', 'all_property_rentals', 'non_residential_only'] },
           taxableElectionDeclaredAndEffective: { type: 'boolean' }
+        }
+      },
+      PropertySaleExemptionRequest: {
+        oneOf: [
+          {
+            type: 'object',
+            required: ['effectiveDate', 'propertyKind', 'propertyResidential', 'firstOccupancy', 'qualifyingUseOrUnitChange', 'sellerDomesticVatRegistered', 'taxableElectionScope', 'taxableElectionDeclaredAndEffective'],
+            properties: {
+              effectiveDate: { type: 'string', format: 'date' },
+              propertyKind: { type: 'string', enum: ['built'] },
+              propertyResidential: { type: 'boolean' },
+              firstOccupancy: {
+                oneOf: [
+                  { type: 'object', required: ['status'], properties: { status: { type: 'string', enum: ['not_occurred'] } } },
+                  { type: 'object', required: ['status', 'statutoryEvidenceDate'], properties: { status: { type: 'string', enum: ['occurred'] }, statutoryEvidenceDate: { type: 'string', format: 'date', description: 'Date of the legally relevant occupancy permit, acknowledgement or authority certificate.' } } }
+                ]
+              },
+              qualifyingUseOrUnitChange: {
+                oneOf: [
+                  { type: 'object', required: ['status'], properties: { status: { type: 'string', enum: ['none'] } } },
+                  { type: 'object', required: ['status', 'statutoryEvidenceDate'], properties: { status: { type: 'string', enum: ['occurred'] }, statutoryEvidenceDate: { type: 'string', format: 'date', description: 'Date of the authority certificate proving the qualifying purpose or independent-unit-count change.' } } }
+                ]
+              },
+              sellerDomesticVatRegistered: { type: 'boolean' },
+              taxableElectionScope: { type: 'string', enum: ['none', 'all_property_sales', 'non_residential_only'] },
+              taxableElectionDeclaredAndEffective: { type: 'boolean' }
+            }
+          },
+          {
+            type: 'object',
+            required: ['effectiveDate', 'propertyKind', 'buildingPlot', 'sellerDomesticVatRegistered', 'taxableElectionScope', 'taxableElectionDeclaredAndEffective'],
+            properties: {
+              effectiveDate: { type: 'string', format: 'date' },
+              propertyKind: { type: 'string', enum: ['undeveloped'] },
+              buildingPlot: { type: 'boolean', description: 'Caller-confirmed classification under the statutory building-plot definition.' },
+              sellerDomesticVatRegistered: { type: 'boolean' },
+              taxableElectionScope: { type: 'string', enum: ['none', 'all_property_sales', 'non_residential_only'] },
+              taxableElectionDeclaredAndEffective: { type: 'boolean' }
+            }
+          }
+        ]
+      },
+      PropertySaleEvaluationResponse: {
+        type: 'object',
+        required: ['rulesetId', 'effectiveDate', 'status', 'treatment', 'treatmentCode', 'propertyClassification', 'taxableElectionApplies', 'legalBasis', 'sourceIds', 'reason', 'notice'],
+        properties: {
+          rulesetId: { type: 'string' },
+          effectiveDate: { type: 'string', format: 'date' },
+          status: { type: 'string', enum: ['exempt', 'not_exempt_under_supported_rule', 'manual_review'] },
+          treatment: { type: 'string', enum: ['exempt', 'mandatory_taxable', 'taxable_by_election', 'manual_review'] },
+          treatmentCode: { type: 'string' },
+          propertyClassification: { type: 'string', enum: ['new_built_property', 'old_built_property', 'building_plot', 'other_undeveloped_property', 'undetermined'] },
+          taxableElectionApplies: { type: 'boolean', nullable: true },
+          legalBasis: { type: 'string' },
+          sourceIds: { type: 'array', items: { type: 'string' } },
+          reason: { type: 'string' },
+          notice: { type: 'string' }
+        }
+      },
+      PropertySaleReverseChargeRequest: {
+        type: 'object',
+        required: ['sale', 'recipientDomesticVatRegistered', 'supplierTaxPayableStatus', 'recipientTaxPayableStatus'],
+        properties: {
+          sale: { $ref: '#/components/schemas/PropertySaleExemptionRequest' },
+          recipientDomesticVatRegistered: { type: 'boolean' },
+          supplierTaxPayableStatus: { type: 'boolean', description: 'Confirms that the supplier has no VAT status under which tax payment cannot be required.' },
+          recipientTaxPayableStatus: { type: 'boolean', description: 'Confirms that the recipient has no VAT status under which tax payment cannot be required.' }
+        }
+      },
+      PropertySaleReverseChargeResponse: {
+        type: 'object',
+        required: ['rulesetId', 'effectiveDate', 'status', 'eligible', 'mechanism', 'propertySaleTreatmentCode', 'checks', 'failedChecks', 'legalBasis', 'sourceIds', 'reason', 'notice'],
+        properties: {
+          rulesetId: { type: 'string' },
+          effectiveDate: { type: 'string', format: 'date' },
+          status: { type: 'string', enum: ['reverse_charge', 'not_reverse_charge_under_supported_rule', 'manual_review'] },
+          eligible: { type: 'boolean', nullable: true },
+          mechanism: { type: 'string', enum: ['domestic_reverse_charge_property_sale'] },
+          propertySaleTreatmentCode: { type: 'string' },
+          checks: { type: 'object', additionalProperties: { type: 'boolean' } },
+          failedChecks: { type: 'array', items: { type: 'string' } },
+          legalBasis: { type: 'string' },
+          sourceIds: { type: 'array', items: { type: 'string' } },
+          reason: { type: 'string' },
+          notice: { type: 'string' }
         }
       },
       RateClassificationRequest: {

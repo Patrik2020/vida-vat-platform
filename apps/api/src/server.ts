@@ -8,6 +8,8 @@ import {
   evaluateAamThreshold2026,
   evaluateActivityExemption,
   evaluateDomesticConstructionReverseCharge,
+  evaluatePropertySaleExemption,
+  evaluatePropertySaleReverseCharge,
   evaluatePropertyRentalExemption,
   getHungaryVatRates,
   resolvePeriodicTaxPoint
@@ -22,6 +24,33 @@ const regulatedActivityGuards = {
   qualificationRequired: z.boolean(),
   qualifiedPersonAvailable: z.boolean()
 } as const;
+const propertySaleElectionFields = {
+  sellerDomesticVatRegistered: z.boolean(),
+  taxableElectionScope: z.enum(['none', 'all_property_sales', 'non_residential_only']),
+  taxableElectionDeclaredAndEffective: z.boolean()
+} as const;
+const propertySaleSchema = z.discriminatedUnion('propertyKind', [
+  z.object({
+    effectiveDate: isoDate,
+    propertyKind: z.literal('built'),
+    propertyResidential: z.boolean(),
+    firstOccupancy: z.discriminatedUnion('status', [
+      z.object({ status: z.literal('not_occurred') }),
+      z.object({ status: z.literal('occurred'), statutoryEvidenceDate: isoDate })
+    ]),
+    qualifyingUseOrUnitChange: z.discriminatedUnion('status', [
+      z.object({ status: z.literal('none') }),
+      z.object({ status: z.literal('occurred'), statutoryEvidenceDate: isoDate })
+    ]),
+    ...propertySaleElectionFields
+  }),
+  z.object({
+    effectiveDate: isoDate,
+    propertyKind: z.literal('undeveloped'),
+    buildingPlot: z.boolean(),
+    ...propertySaleElectionFields
+  })
+]);
 
 export function buildServer() {
   const app = Fastify({ logger: true });
@@ -36,7 +65,7 @@ export function buildServer() {
     staticCSP: true
   });
 
-  app.get('/health', async () => ({ status: 'ok', service: 'vida-vat-platform', version: '0.5.0' }));
+  app.get('/health', async () => ({ status: 'ok', service: 'vida-vat-platform', version: '0.6.0' }));
   app.get('/openapi.json', async () => OPENAPI_DOCUMENT);
 
   app.get('/v1/hu/vat/rates', async (request, reply) => {
@@ -99,6 +128,18 @@ export function buildServer() {
     catch (error) { return sendApiError(request, reply, 422, 'reverse_charge_evaluation_failed', error instanceof Error ? error.message : 'Reverse-charge evaluation failed'); }
   });
 
+  app.post('/v1/hu/vat/reverse-charge/property-sale', async (request, reply) => {
+    const parsed = z.object({
+      sale: propertySaleSchema,
+      recipientDomesticVatRegistered: z.boolean(),
+      supplierTaxPayableStatus: z.boolean(),
+      recipientTaxPayableStatus: z.boolean()
+    }).safeParse(request.body);
+    if (!parsed.success) return sendApiError(request, reply, 400, 'invalid_request', 'Request validation failed', parsed.error.issues);
+    try { return evaluatePropertySaleReverseCharge(parsed.data); }
+    catch (error) { return sendApiError(request, reply, 422, 'property_sale_reverse_charge_evaluation_failed', error instanceof Error ? error.message : 'Property-sale reverse-charge evaluation failed'); }
+  });
+
   app.post('/v1/hu/vat/exemptions/aam/threshold', async (request, reply) => {
     const parsed = z.object({
       effectiveDate: isoDate, establishedBefore2026: z.boolean(), registrationDate: isoDate.optional(), valuesCalculatedUnderSection188: z.boolean(),
@@ -144,6 +185,13 @@ export function buildServer() {
     if (!parsed.success) return sendApiError(request, reply, 400, 'invalid_request', 'Request validation failed', parsed.error.issues);
     try { return evaluatePropertyRentalExemption(parsed.data); }
     catch (error) { return sendApiError(request, reply, 422, 'property_rental_exemption_evaluation_failed', error instanceof Error ? error.message : 'Property rental exemption evaluation failed'); }
+  });
+
+  app.post('/v1/hu/vat/exemptions/property-sale', async (request, reply) => {
+    const parsed = propertySaleSchema.safeParse(request.body);
+    if (!parsed.success) return sendApiError(request, reply, 400, 'invalid_request', 'Request validation failed', parsed.error.issues);
+    try { return evaluatePropertySaleExemption(parsed.data); }
+    catch (error) { return sendApiError(request, reply, 422, 'property_sale_exemption_evaluation_failed', error instanceof Error ? error.message : 'Property-sale exemption evaluation failed'); }
   });
 
   return app;

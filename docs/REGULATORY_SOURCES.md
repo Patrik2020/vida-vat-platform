@@ -30,7 +30,9 @@ Relevant Phase 1 provisions include:
 - 82. § (1) — 27% standard rate;
 - 82. § (2) and Annex 3 — 5% reduced rate;
 - 82. § (3) and Annex 3/A — 18% reduced rate;
-- 85–86. § — major activity-based exemption categories;
+- 85. § — public-interest activity exemptions, including supported healthcare, dental and education cases and regulatory permit/qualification conditions;
+- 86. § — specific-nature exemptions, including supported insurance, credit/payment/financial services and property rental; debt collection and portfolio-management exclusions are modelled where applicable;
+- 88. § — option to make otherwise exempt property transactions taxable, with the current MVP modelling the property-rental election and non-residential-only scope;
 - 142. § — domestic reverse-charge cases and conditions;
 - 188. § — domestic small-business VAT exemption turnover threshold and turnover-value basis;
 - 189. § — election and time-proportional threshold condition for taxpayers registering during the tax year.
@@ -45,7 +47,18 @@ Relevant Phase 1 provisions include:
 - 0% qualifying prescription / human magistral medicine guidance effective from 2026-09-01: https://nav.gov.hu/print/ado/afa/Tajekoztato_a_venykoteles_gyogyszerek_adomertekerol
 - periodic-settlement guidance: https://nav.gov.hu/pfile/file?path=%2Fado%2Fafa%2FTajekoztato_-_Idoszakos_elszamolasu_ugyletekre_vonatkozo_szabalyozas_valtozasa
 - 2026 small-business VAT exemption threshold guidance: https://nav.gov.hu/ado/afa/Emelkedik_az_alanyi_adomentesseg_ertekhatara
-- 2026 NAV information booklet confirming that a taxpayer starting during the year uses the annual AAM threshold's time-proportional part for the remaining days of the year: https://nav.gov.hu/pfile/file?path=%2Fugyfeliranytu%2Fnezzen-utana%2Finf_fuz%2F2026%2F10.-Ingatlan-berbeadasanak-es-egyeb-hasznositasanak-adozasa-2026.02.03
+- 2026 NAV information booklet on property rental, confirming the §86 property-rental exemption, §86 (2) exceptions, §88 taxation-election choices and the time-proportional AAM principle for a taxpayer starting during the year: https://nav.gov.hu/pfile/file?path=%2Fugyfeliranytu%2Fnezzen-utana%2Finf_fuz%2F2026%2F10.-Ingatlan-berbeadasanak-es-egyeb-hasznositasanak-adozasa-2026.02.03
+
+## Exemption implementation boundary
+
+The first §85–86 evaluator is intentionally bounded. It automates only fact patterns whose statutory conditions are represented in the input model. In particular:
+
+- supported healthcare/dental/education cases retain the §85 (3) permit/qualification guards;
+- public-service-provider definitions and every §85 category are not yet fully modelled;
+- supported insurance/credit/payment cases do not imply that every financial service is exempt;
+- debt collection and portfolio management are explicitly prevented from being treated as exempt through the supported payment/financial path;
+- a result of `not_exempt_under_supported_rule` never means “27% automatically”; another exemption, rate or treatment may still require classification;
+- AAM is a separate taxpayer-level overlay and is not silently mixed into the activity-specific property-rental decision.
 
 ## AAM §189 implementation convention
 

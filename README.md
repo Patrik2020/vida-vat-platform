@@ -27,7 +27,7 @@ Primary ViDA legal acts:
 
 ## Hungary VAT API — Phase 1 MVP
 
-The current Hungary ruleset is `HU-VAT-2026-002`, verified through **2026-09-01**.
+The current Hungary ruleset is `HU-VAT-2026-003`, verified through **2026-09-01**.
 
 Implemented foundations:
 
@@ -37,6 +37,9 @@ Implemented foundations:
 - partial, deterministic rate classification;
 - 0% qualifying daily-newspaper classification;
 - 0% qualifying prescription and human magistral medicine classification from 2026-09-01;
+- supported 18% product subsets with both statutory-description and VTSZ checks;
+- supported 2026 5% domesticated-cattle product subset with VTSZ and product-condition checks;
+- 2026 AAM 20,000,000 HUF threshold evaluator for existing businesses using caller-supplied Áfa tv. 188. § turnover values;
 - exact decimal VAT arithmetic from net or gross values;
 - taxable, exempt and reverse-charge computational treatments;
 - Áfa tv. 58. § periodic-settlement tax-point resolver;
@@ -48,6 +51,8 @@ Implemented foundations:
 The API does **not** infer a standard 27% rate when facts are insufficient. Unsupported or unproven reduced/zero-rate cases return `manual_review` instead.
 
 This is intentional. Hungarian reduced rates frequently depend on statutory product descriptions, VTSZ/KN classification and transaction-specific facts.
+
+The AAM evaluator is similarly bounded: newly registered businesses currently return `manual_review` because the Áfa tv. 189. § time-proportional threshold logic has not yet been separately modelled.
 
 ## Repository structure
 
@@ -85,6 +90,7 @@ Current endpoints:
 - `POST /v1/hu/vat/calculate`
 - `POST /v1/hu/vat/tax-point/periodic`
 - `POST /v1/hu/vat/reverse-charge/domestic-construction`
+- `POST /v1/hu/vat/exemptions/aam/threshold`
 
 See `docs/API.md` for request/response examples and current MVP limitations.
 
@@ -105,4 +111,4 @@ The software is infrastructure and does not replace professional tax or legal ad
 
 **Phase 1 — Hungary VAT API MVP in active development.**
 
-The deterministic core is now functional. Remaining Phase 1 work focuses on broader reduced-rate mappings, exemption models, API schema/OpenAPI hardening, official-example fixtures and production-grade error/version contracts.
+The deterministic core is functional and now includes first reduced-rate and AAM threshold modules. Remaining Phase 1 work focuses on broader 5%/18% mappings, fuller exemption models, Áfa tv. 189. § new-business AAM handling, API schema/OpenAPI hardening, official-example fixtures and production-grade error/version contracts.

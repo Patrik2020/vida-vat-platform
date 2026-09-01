@@ -21,19 +21,23 @@
 - exact decimal VAT calculation from net or gross values;
 - periodic-settlement tax-point resolution under Áfa tv. 58. §;
 - domestic construction reverse-charge evaluator;
+- 2026 AAM annual 20,000,000 HUF threshold evaluator;
+- Áfa tv. 189. § time-proportional AAM evaluator for taxpayers registered during 2026, with exact rational boundary comparison;
+- stable versioned API error envelope with request IDs;
+- machine-readable OpenAPI contract and Swagger UI;
+- automated authoritative-source regulatory monitoring with a separate audit-state branch;
 - Fastify integration tests and rules-engine tests;
-- current API usage documentation.
+- current API usage and regulatory-source documentation.
 
 ### Remaining Phase 1 work
 
 - broaden authoritative classification mappings for 5% and 18% rates;
-- formal exemption models, beginning with the most commercially relevant Hungarian cases;
+- expand formal exemption models beyond the AAM threshold foundation, beginning with commercially relevant Hungarian cases;
 - deepen reverse-charge coverage beyond the supported construction scenario;
 - research and formalise invoice-level rounding/aggregation and currency rules;
-- machine-readable OpenAPI contract generated or validated against runtime schemas;
-- stable API error/version contract;
+- expand response schemas/examples in the OpenAPI contract as business models stabilise;
 - expanded fixtures based on official NAV examples;
-- regulatory refresh workflow so the verified-through window can advance safely.
+- advance the verified-through window through reviewed regulatory refreshes without weakening fail-closed behavior.
 
 ## Phase 2 — Hungary compliance engine
 

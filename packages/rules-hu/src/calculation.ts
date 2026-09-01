@@ -1,4 +1,4 @@
-import { assertSupportedDate } from './rates.js';
+import { HUNGARY_VAT_RULESET, assertSupportedDate } from './rates.js';
 import type { HungaryVatRate } from './types.js';
 
 export type VatCalculationInput = {
@@ -44,7 +44,7 @@ export function calculateHungaryVat(input: VatCalculationInput) {
 
   if (input.treatment !== 'taxable') {
     return {
-      rulesetId: 'HU-VAT-2026-002',
+      rulesetId: HUNGARY_VAT_RULESET.id,
       effectiveDate: input.effectiveDate,
       treatment: input.treatment,
       rate: null,
@@ -78,7 +78,7 @@ export function calculateHungaryVat(input: VatCalculationInput) {
   }
 
   return {
-    rulesetId: 'HU-VAT-2026-002',
+    rulesetId: HUNGARY_VAT_RULESET.id,
     effectiveDate: input.effectiveDate,
     treatment: input.treatment,
     rate: input.rate,

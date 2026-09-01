@@ -11,12 +11,15 @@
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
+    "@fastify/swagger": "^9.8.1",
+    "@fastify/swagger-ui": "^5.2.6",
     "@vida/rules-hu": "workspace:*",
     "fastify": "^5.5.0",
     "zod": "^4.1.5"
   },
   "devDependencies": {
     "@types/node": "^22.18.0",
+    "openapi-types": "^12.1.3",
     "tsx": "^4.20.5",
     "typescript": "^5.9.2",
     "vitest": "^3.2.4"

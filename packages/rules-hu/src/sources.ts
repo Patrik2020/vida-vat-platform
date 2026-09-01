@@ -5,7 +5,7 @@ export const HUNGARY_VAT_SOURCES: RegulatorySource[] = [
     id: 'HU-AFA-TV',
     authority: 'Nemzeti Jogszabálytár',
     title: '2007. évi CXXVII. törvény az általános forgalmi adóról',
-    url: 'https://njt.hu/jogszabaly/2007-127-00-00'
+    url: 'https://njt.jog.gov.hu/eli/TV/2007/127/hu/html'
   },
   {
     id: 'NAV-ZERO-NEWSPAPER-2024',
@@ -54,5 +54,12 @@ export const HUNGARY_VAT_SOURCES: RegulatorySource[] = [
     title: 'Emelkedik az alanyi adómentesség értékhatára',
     url: 'https://nav.gov.hu/ado/afa/Emelkedik_az_alanyi_adomentesseg_ertekhatara',
     publishedAt: '2025-12-11'
+  },
+  {
+    id: 'NAV-AAM-TIME-PROPORTION-2026',
+    authority: 'Nemzeti Adó- és Vámhivatal',
+    title: 'Ingatlan bérbeadásának és egyéb hasznosításának adózása 2026',
+    url: 'https://nav.gov.hu/pfile/file?path=%2Fugyfeliranytu%2Fnezzen-utana%2Finf_fuz%2F2026%2F10.-Ingatlan-berbeadasanak-es-egyeb-hasznositasanak-adozasa-2026.02.03',
+    publishedAt: '2026-02-03'
   }
 ];

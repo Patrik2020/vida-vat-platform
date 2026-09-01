@@ -21,7 +21,7 @@ This file is an index, not a substitute for reading the current consolidated leg
 
 ### Primary legislation
 
-- 2007. évi CXXVII. törvény az általános forgalmi adóról: https://njt.hu/jogszabaly/2007-127-00-00
+- 2007. évi CXXVII. törvény az általános forgalmi adóról — official NJT ELI current HTML: https://njt.jog.gov.hu/eli/TV/2007/127/hu/html
 
 Relevant Phase 1 provisions include:
 
@@ -31,7 +31,9 @@ Relevant Phase 1 provisions include:
 - 82. § (2) and Annex 3 — 5% reduced rate;
 - 82. § (3) and Annex 3/A — 18% reduced rate;
 - 85–86. § — major activity-based exemption categories;
-- 142. § — domestic reverse-charge cases and conditions.
+- 142. § — domestic reverse-charge cases and conditions;
+- 188. § — domestic small-business VAT exemption turnover threshold and turnover-value basis;
+- 189. § — election and time-proportional threshold condition for taxpayers registering during the tax year.
 
 ### NAV guidance used by the Phase 1 rules
 
@@ -43,6 +45,15 @@ Relevant Phase 1 provisions include:
 - 0% qualifying prescription / human magistral medicine guidance effective from 2026-09-01: https://nav.gov.hu/print/ado/afa/Tajekoztato_a_venykoteles_gyogyszerek_adomertekerol
 - periodic-settlement guidance: https://nav.gov.hu/pfile/file?path=%2Fado%2Fafa%2FTajekoztato_-_Idoszakos_elszamolasu_ugyletekre_vonatkozo_szabalyozas_valtozasa
 - 2026 small-business VAT exemption threshold guidance: https://nav.gov.hu/ado/afa/Emelkedik_az_alanyi_adomentesseg_ertekhatara
+- 2026 NAV information booklet confirming that a taxpayer starting during the year uses the annual AAM threshold's time-proportional part for the remaining days of the year: https://nav.gov.hu/pfile/file?path=%2Fugyfeliranytu%2Fnezzen-utana%2Finf_fuz%2F2026%2F10.-Ingatlan-berbeadasanak-es-egyeb-hasznositasanak-adozasa-2026.02.03
+
+## AAM §189 implementation convention
+
+For the current deterministic 2026 implementation, the API prorates the 20,000,000 HUF annual threshold over calendar days from `registrationDate` through 31 December, inclusive. Eligibility comparisons use the exact rational amount (`20,000,000 × activeDays / daysInYear`), not a rounded daily rate or rounded display threshold.
+
+`thresholdHuf` in API responses is the whole-forint floor of that exact fraction for display/audit convenience only. The legal decision uses integer cross-products, avoiding a software-created rounding rule at the boundary.
+
+If the caller cannot confirm that turnover values have already been calculated according to Áfa tv. 188. §, the evaluator fails closed with `manual_review` rather than deriving statutory exclusions from incomplete raw facts.
 
 ## Important 2026-09-01 change
 

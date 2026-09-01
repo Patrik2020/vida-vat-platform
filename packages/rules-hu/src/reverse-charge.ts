@@ -1,4 +1,4 @@
-import { assertSupportedDate } from './rates.js';
+import { HUNGARY_VAT_RULESET, assertSupportedDate } from './rates.js';
 
 export type DomesticConstructionReverseChargeInput = {
   effectiveDate: string;
@@ -30,7 +30,7 @@ export function evaluateDomesticConstructionReverseCharge(input: DomesticConstru
   const failedChecks = Object.entries(checks).filter(([, value]) => !value).map(([key]) => key);
 
   return {
-    rulesetId: 'HU-VAT-2026-002',
+    rulesetId: HUNGARY_VAT_RULESET.id,
     effectiveDate: input.effectiveDate,
     mechanism: 'domestic_reverse_charge_construction',
     eligible,

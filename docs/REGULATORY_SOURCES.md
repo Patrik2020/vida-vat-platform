@@ -27,6 +27,8 @@ Relevant Phase 1 provisions include:
 
 - 55–59. § — tax point / performance and advance-payment foundations;
 - 58. § — periodic settlement/payment transactions;
+- 80. § — foreign-currency tax-base conversion date, domestic-bank/MNB source choices, scope and lock-in rules, plus the unquoted-currency fallback;
+- 80/A. § — EKB election and euro cross-rate method;
 - 82. § (1) — 27% standard rate;
 - 82. § (2) and Annex 3 — 5% reduced rate;
 - 82. § (3) and Annex 3/A — 18% reduced rate;
@@ -34,6 +36,7 @@ Relevant Phase 1 provisions include:
 - 86. § — specific-nature exemptions, including supported insurance, credit/payment/financial services, property rental and property sales; the property-sale evaluator models j)–k), including ja)–jc) and building-plot exceptions;
 - 88. § — option to make otherwise exempt property transactions taxable, with the current MVP modelling separate sale/rental elections and non-residential-only scope;
 - 142. § — domestic reverse-charge cases and conditions, including supported construction and §88-elected property-sale paths;
+- 169. § j)–k), 171–172. § — invoice tax-base/rate/VAT content, grouped-invoice aggregation and the HUF display of passed-on VAT on supported domestic foreign-currency invoices;
 - 188. § — domestic small-business VAT exemption turnover threshold and turnover-value basis;
 - 189. § — election and time-proportional threshold condition for taxpayers registering during the tax year.
 
@@ -46,6 +49,7 @@ Relevant Phase 1 provisions include:
 - 0% daily-newspaper VAT rate from 2024: https://nav.gov.hu/ado/afa/Uj_0_-os_adomertek_a_szamlaadat-szolgaltatasban_2024-tol
 - 0% qualifying prescription / human magistral medicine guidance effective from 2026-09-01: https://nav.gov.hu/print/ado/afa/Tajekoztato_a_venykoteles_gyogyszerek_adomertekerol
 - periodic-settlement guidance: https://nav.gov.hu/pfile/file?path=%2Fado%2Fafa%2FTajekoztato_-_Idoszakos_elszamolasu_ugyletekre_vonatkozo_szabalyozas_valtozasa
+- 2026 NAV information booklet on the basic invoice/receipt rules, including the supported §80–80/A rate sources, prior MNB/EKB declaration and the §172 HUF VAT-display rule: https://nav.gov.hu/pfile/file?path=%2Fugyfeliranytu%2Fnezzen-utana%2Finf_fuz%2F2026%2F18.-A-szamla-nyugta-kibocsatasanak-alapveto-szabalyai-2026.-03.-02.
 - 2026 small-business VAT exemption threshold guidance: https://nav.gov.hu/ado/afa/Emelkedik_az_alanyi_adomentesseg_ertekhatara
 - 2026 NAV information booklet on property rental, confirming the §86 property-rental exemption, §86 (2) exceptions, §88 taxation-election choices and the time-proportional AAM principle for a taxpayer starting during the year: https://nav.gov.hu/pfile/file?path=%2Fugyfeliranytu%2Fnezzen-utana%2Finf_fuz%2F2026%2F10.-Ingatlan-berbeadasanak-es-egyeb-hasznositasanak-adozasa-2026.02.03
 - 2023/8 tax question, reproducing and applying the current §86 (1) j) ja)–jc) built-property tests: https://nav.gov.hu/ado/adozasi_kerdes/2023-8_-_Berelt_ingatlanon_vegzett_beruhazassal_kapcsolatos_egyes_afakerdesek
@@ -84,6 +88,18 @@ For the current deterministic 2026 implementation, the API prorates the 20,000,0
 `thresholdHuf` in API responses is the whole-forint floor of that exact fraction for display/audit convenience only. The legal decision uses integer cross-products, avoiding a software-created rounding rule at the boundary.
 
 If the caller cannot confirm that turnover values have already been calculated according to Áfa tv. 188. §, the evaluator fails closed with `manual_review` rather than deriving statutory exclusions from incomplete raw facts.
+
+## Currency and invoice-arithmetic boundary
+
+The supported currency endpoint resolves the §80 (1) date from a typed transaction context and accepts documentary rate evidence for:
+
+- a domestic credit institution's foreign-currency selling quote under §80 (2) a);
+- an MNB official quote under a confirmed prior, full-scope and still-binding election;
+- an EKB official quote under the same election safeguards, using the §80/A euro cross-rate method for non-euro source currencies.
+
+The caller must confirm that the supplied observation was the latest valid rate at the statutory date. The engine verifies dates and performs exact rational arithmetic, but it does not present caller-supplied evidence as independently fetched. The §80 (5) unquoted-currency path currently returns `manual_review`; §81 import/customs conversion and modification/correction-specific exchange-rate treatment are outside this endpoint.
+
+The VAT Act and the cited NAV invoice guidance establish invoice content, grouping and HUF VAT-display requirements, but the reviewed provisions do not establish one universal line-versus-summary rounding method for every invoicing context. Consequently the invoice endpoint computes both results, exposes every difference and labels the selected method `caller_selected_computational_policy`. It does not allocate a summary-level difference back to individual lines.
 
 ## Important 2026-09-01 change
 

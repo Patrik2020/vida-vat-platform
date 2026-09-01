@@ -1,6 +1,8 @@
 export { HUNGARY_VAT_SOURCES } from './sources.js';
 export { HUNGARY_VAT_RULESET, assertSupportedDate, classifyHungaryVatRate, getHungaryVatRates } from './rates.js';
 export { calculateHungaryVat } from './calculation.js';
+export { convertHungaryVatAmountToHuf } from './currency.js';
+export { aggregateHungaryVatInvoice } from './invoice-arithmetic.js';
 export { resolvePeriodicTaxPoint } from './tax-point.js';
 export { evaluateDomesticConstructionReverseCharge, evaluatePropertySaleReverseCharge } from './reverse-charge.js';
 export { evaluateAamThreshold2026 } from './aam.js';
@@ -9,6 +11,8 @@ export { evaluatePropertyRentalExemption } from './property-rental.js';
 export { evaluatePropertySaleExemption } from './property-sale.js';
 export type { HungaryVatRate, RateClassificationResult, RegulatorySource } from './types.js';
 export type { VatCalculationInput } from './calculation.js';
+export type { HungaryCurrencyConversionInput } from './currency.js';
+export type { HungaryInvoiceAggregationInput, HungaryInvoiceLineInput, InvoiceRoundingPolicy } from './invoice-arithmetic.js';
 export type { PeriodicTaxPointInput } from './tax-point.js';
 export type { DomesticConstructionReverseChargeInput, PropertySaleReverseChargeInput, PropertySaleReverseChargeResult } from './reverse-charge.js';
 export type { AamThreshold2026Input } from './aam.js';

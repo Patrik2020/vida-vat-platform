@@ -1,8 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import {
   HUNGARY_VAT_RULESET,
+  aggregateHungaryVatInvoice,
   calculateHungaryVat,
   classifyHungaryVatRate,
+  convertHungaryVatAmountToHuf,
   evaluateAamThreshold2026,
   evaluateActivityExemption,
   evaluateDomesticConstructionReverseCharge,
@@ -16,7 +18,7 @@ import {
 describe('Hungary VAT Phase 1 rules', () => {
   it('exposes 0, 5, 18 and 27 percent rates for 2026', () => {
     const result = getHungaryVatRates('2026-09-01');
-    expect(result.rulesetId).toBe('HU-VAT-2026-006');
+    expect(result.rulesetId).toBe('HU-VAT-2026-007');
     expect(result.rates.map((entry) => entry.rate)).toEqual([27, 18, 5, 0]);
   });
 
@@ -64,7 +66,7 @@ describe('Hungary VAT Phase 1 rules', () => {
     expect(evaluateActivityExemption({
       effectiveDate: '2026-09-01', kind: 'human_healthcare', serviceIsHumanHealthcare: true, providerActsInHealthcareCapacity: true,
       permitRequired: true, permitHeld: true, qualificationRequired: true, qualifiedPersonAvailable: true
-    })).toMatchObject({ rulesetId: 'HU-VAT-2026-006', status: 'exempt', exemptionCode: 'HU_85_1_C_HEALTHCARE' });
+    })).toMatchObject({ rulesetId: 'HU-VAT-2026-007', status: 'exempt', exemptionCode: 'HU_85_1_C_HEALTHCARE' });
 
     expect(evaluateActivityExemption({
       effectiveDate: '2026-09-01', kind: 'human_healthcare', serviceIsHumanHealthcare: true, providerActsInHealthcareCapacity: true,
@@ -94,7 +96,7 @@ describe('Hungary VAT Phase 1 rules', () => {
     expect(evaluatePropertyRentalExemption({
       effectiveDate: '2026-09-01', rentalKind: 'ordinary', propertyResidential: true,
       taxableElectionScope: 'none', taxableElectionDeclaredAndEffective: false
-    })).toMatchObject({ rulesetId: 'HU-VAT-2026-006', status: 'exempt', treatmentCode: 'HU_86_1_L_PROPERTY_RENTAL_EXEMPT' });
+    })).toMatchObject({ rulesetId: 'HU-VAT-2026-007', status: 'exempt', treatmentCode: 'HU_86_1_L_PROPERTY_RENTAL_EXEMPT' });
   });
 
   it('recognises the statutory property-rental exceptions', () => {
@@ -121,7 +123,7 @@ describe('Hungary VAT Phase 1 rules', () => {
       firstOccupancy: { status: 'not_occurred' }, qualifyingUseOrUnitChange: { status: 'none' },
       sellerDomesticVatRegistered: true, taxableElectionScope: 'none', taxableElectionDeclaredAndEffective: false
     })).toMatchObject({
-      rulesetId: 'HU-VAT-2026-006', status: 'not_exempt_under_supported_rule', treatment: 'mandatory_taxable',
+      rulesetId: 'HU-VAT-2026-007', status: 'not_exempt_under_supported_rule', treatment: 'mandatory_taxable',
       treatmentCode: 'HU_86_1_JA_NEW_PROPERTY_MANDATORY_TAXABLE', propertyClassification: 'new_built_property'
     });
 
@@ -202,7 +204,7 @@ describe('Hungary VAT Phase 1 rules', () => {
     expect(evaluatePropertySaleReverseCharge({
       sale: electedSale, recipientDomesticVatRegistered: true, supplierTaxPayableStatus: true, recipientTaxPayableStatus: true
     })).toMatchObject({
-      rulesetId: 'HU-VAT-2026-006', status: 'reverse_charge', eligible: true,
+      rulesetId: 'HU-VAT-2026-007', status: 'reverse_charge', eligible: true,
       mechanism: 'domestic_reverse_charge_property_sale', failedChecks: []
     });
 
@@ -224,9 +226,9 @@ describe('Hungary VAT Phase 1 rules', () => {
 
   it('calculates VAT exactly from net and gross amounts', () => {
     expect(calculateHungaryVat({ effectiveDate: '2026-09-01', amount: '100.00', amountType: 'net', treatment: 'taxable', rate: 27 }))
-      .toMatchObject({ rulesetId: 'HU-VAT-2026-006', netAmount: '100.00', vatAmount: '27.00', grossAmount: '127.00' });
+      .toMatchObject({ rulesetId: 'HU-VAT-2026-007', netAmount: '100.00', vatAmount: '27.00', grossAmount: '127.00' });
     expect(calculateHungaryVat({ effectiveDate: '2026-09-01', amount: '127.00', amountType: 'gross', treatment: 'taxable', rate: 27 }))
-      .toMatchObject({ rulesetId: 'HU-VAT-2026-006', netAmount: '100.00', vatAmount: '27.00', grossAmount: '127.00' });
+      .toMatchObject({ rulesetId: 'HU-VAT-2026-007', netAmount: '100.00', vatAmount: '27.00', grossAmount: '127.00' });
   });
 
   it('does not charge seller VAT for reverse charge', () => {
@@ -234,8 +236,116 @@ describe('Hungary VAT Phase 1 rules', () => {
       .toMatchObject({ vatAmount: '0.00', sellerChargesVat: false, recipientAccountingRequired: true });
   });
 
+  it('resolves the statutory exchange-rate date and converts an MNB quote exactly', () => {
+    expect(convertHungaryVatAmountToHuf({
+      currency: 'EUR', amount: '100.00', outputScale: 2,
+      transaction: { kind: 'periodic_settlement_section_58', invoiceIssueDate: '2026-08-20' },
+      rate: {
+        source: 'mnb', quotedCurrencyUnits: '1', hufAmount: '395.12', ratePublicationDate: '2026-08-20',
+        latestValidRateConfirmed: true, electionDeclaredToNavBeforeUse: true,
+        electionAppliesToAllForeignCurrencyTransactions: true, electionLockInObserved: true,
+        exclusiveMnbOrEcbChoiceConfirmed: true
+      }
+    })).toMatchObject({
+      rulesetId: 'HU-VAT-2026-007', status: 'converted', amountHuf: '39512.00',
+      conversionDate: '2026-08-20', dateRule: 'invoice_issue_date', rateSource: 'mnb'
+    });
+  });
+
+  it('uses the EKB euro cross-rate for a non-euro currency', () => {
+    expect(convertHungaryVatAmountToHuf({
+      currency: 'USD', amount: '100.00', outputScale: 2,
+      transaction: { kind: 'other', performanceDate: '2026-09-01' },
+      rate: {
+        source: 'ecb', hufUnitsPerEur: '395.40', foreignCurrencyUnitsPerEur: '1.10',
+        ratePublicationDate: '2026-09-01', latestValidRateConfirmed: true,
+        electionDeclaredToNavBeforeUse: true, electionAppliesToAllForeignCurrencyTransactions: true,
+        electionLockInObserved: true, exclusiveMnbOrEcbChoiceConfirmed: true
+      }
+    })).toMatchObject({ status: 'converted', amountHuf: '35945.45', dateRule: 'performance_date', rateSource: 'ecb' });
+  });
+
+  it('fails closed when official-rate election evidence is incomplete', () => {
+    expect(convertHungaryVatAmountToHuf({
+      currency: 'EUR', amount: '100',
+      transaction: { kind: 'advance_payment', taxLiabilityDeterminationDate: '2026-09-01' },
+      rate: {
+        source: 'mnb', quotedCurrencyUnits: '1', hufAmount: '395.12', ratePublicationDate: '2026-09-01',
+        latestValidRateConfirmed: true, electionDeclaredToNavBeforeUse: false,
+        electionAppliesToAllForeignCurrencyTransactions: true, electionLockInObserved: true,
+        exclusiveMnbOrEcbChoiceConfirmed: true
+      }
+    })).toMatchObject({ status: 'manual_review', dateRule: 'tax_liability_determination_date' });
+
+    expect(convertHungaryVatAmountToHuf({
+      currency: 'EUR', amount: '100',
+      transaction: { kind: 'other', performanceDate: '2026-09-01' },
+      rate: {
+        source: 'ecb', hufUnitsPerEur: '395.12', ratePublicationDate: '2026-09-01',
+        latestValidRateConfirmed: true, electionDeclaredToNavBeforeUse: true,
+        electionAppliesToAllForeignCurrencyTransactions: true, electionLockInObserved: true,
+        exclusiveMnbOrEcbChoiceConfirmed: false
+      }
+    })).toMatchObject({ status: 'manual_review', reason: expect.stringMatching(/not used together/) });
+  });
+
+  it('shows the exact difference between per-line and per-rate-summary VAT rounding', () => {
+    const result = aggregateHungaryVatInvoice({
+      effectiveDate: '2026-09-01', currency: 'HUF', scale: 2, roundingPolicy: 'per_vat_rate_summary',
+      lines: [
+        { lineId: '1', netAmount: '0.01', treatment: 'taxable', rate: 27 },
+        { lineId: '2', netAmount: '0.01', treatment: 'taxable', rate: 27 },
+        { lineId: '3', netAmount: '0.01', treatment: 'taxable', rate: 27 }
+      ]
+    });
+    expect(result).toMatchObject({
+      rulesetId: 'HU-VAT-2026-007', roundingPolicy: 'per_vat_rate_summary',
+      totals: {
+        netAmount: '0.03', lineRoundedVatAmount: '0.00', rateSummaryRoundedVatAmount: '0.01',
+        roundingDifference: '0.01', selectedVatAmount: '0.01', selectedGrossAmount: '0.04'
+      },
+      reconciliation: {
+        differenceDetected: true, allocationRequiredForLineReconciliation: true,
+        selectedPolicyReconcilesTo: 'sum_of_rate_summary_rounded_vat'
+      }
+    });
+    expect(result.lines[0]).toMatchObject({
+      exactVatMinorUnits: { numerator: '27', denominator: '100' }, lineRoundedVatAmount: '0.00'
+    });
+  });
+
+  it('keeps exempt and reverse-charge invoice groups at zero seller VAT', () => {
+    const result = aggregateHungaryVatInvoice({
+      effectiveDate: '2026-09-01', currency: 'EUR', roundingPolicy: 'per_line',
+      lines: [
+        { lineId: 'tax', netAmount: '10.00', treatment: 'taxable', rate: 5 },
+        { lineId: 'exempt', netAmount: '20.00', treatment: 'exempt' },
+        { lineId: 'rc', netAmount: '30.00', treatment: 'reverse_charge' }
+      ]
+    });
+    expect(result.totals).toMatchObject({ netAmount: '60.00', selectedVatAmount: '0.50', selectedGrossAmount: '60.50' });
+    expect(result.summaries.find((entry) => entry.treatment === 'reverse_charge'))
+      .toMatchObject({ rate: null, selectedVatAmount: '0.00' });
+  });
+
+  it('detects group-level rounding differences even when invoice-level differences cancel out', () => {
+    const result = aggregateHungaryVatInvoice({
+      effectiveDate: '2026-09-01', currency: 'HUF', scale: 2, roundingPolicy: 'per_line',
+      lines: [
+        { lineId: '27-a', netAmount: '0.01', treatment: 'taxable', rate: 27 },
+        { lineId: '27-b', netAmount: '0.01', treatment: 'taxable', rate: 27 },
+        { lineId: '27-c', netAmount: '0.01', treatment: 'taxable', rate: 27 },
+        { lineId: '5-a', netAmount: '0.10', treatment: 'taxable', rate: 5 },
+        { lineId: '5-b', netAmount: '0.10', treatment: 'taxable', rate: 5 }
+      ]
+    });
+    expect(result.totals.roundingDifference).toBe('0.00');
+    expect(result.reconciliation).toMatchObject({ differenceDetected: true, allocationRequiredForLineReconciliation: false });
+    expect(result.reconciliation.groupsWithDifference).toHaveLength(2);
+  });
+
   it('resolves periodic tax points and fails closed outside the verification window', () => {
-    expect(resolvePeriodicTaxPoint({ periodEnd: '2026-08-31', invoiceDate: '2026-08-20', dueDate: '2026-08-25' })).toMatchObject({ rulesetId: 'HU-VAT-2026-006', taxPoint: '2026-08-20' });
+    expect(resolvePeriodicTaxPoint({ periodEnd: '2026-08-31', invoiceDate: '2026-08-20', dueDate: '2026-08-25' })).toMatchObject({ rulesetId: 'HU-VAT-2026-007', taxPoint: '2026-08-20' });
     expect(resolvePeriodicTaxPoint({ periodEnd: '2026-06-30', invoiceDate: '2026-06-30', dueDate: '2026-11-01' }).taxPoint).toBe('2026-08-29');
     expect(() => resolvePeriodicTaxPoint({ periodEnd: '2026-07-31', invoiceDate: '2026-07-31', dueDate: '2026-11-01' })).toThrow(/verified only through/);
   });
@@ -245,7 +355,7 @@ describe('Hungary VAT Phase 1 rules', () => {
       effectiveDate: '2026-09-01', supplierDomesticVatRegistered: true, recipientDomesticVatRegistered: true,
       supplierTaxPayableStatus: true, recipientTaxPayableStatus: true, constructionAssemblyWork: true,
       propertyActivity: 'transform', authorityPermitOrNotificationRequired: true, requiredDeclarationProvided: true
-    })).toMatchObject({ rulesetId: 'HU-VAT-2026-006', eligible: true });
+    })).toMatchObject({ rulesetId: 'HU-VAT-2026-007', eligible: true });
   });
 
   it('treats 19m prior-year turnover as within the 2026 AAM 20m threshold', () => {
@@ -270,7 +380,7 @@ describe('Hungary VAT Phase 1 rules', () => {
       priorYearRelevantDomesticTurnoverHuf: '0', currentYearExpectedRelevantDomesticTurnoverHuf: '10082191', currentYearActualRelevantDomesticTurnoverHuf: '5000000'
     });
     expect(result).toMatchObject({
-      rulesetId: 'HU-VAT-2026-006', status: 'eligible_within_threshold', thresholdMode: 'time_proportional', thresholdHuf: '10082191',
+      rulesetId: 'HU-VAT-2026-007', status: 'eligible_within_threshold', thresholdMode: 'time_proportional', thresholdHuf: '10082191',
       registrationDate: '2026-07-01', activeDays: 184, daysInYear: 365, choiceEligible: true
     });
   });

@@ -28,6 +28,13 @@ Future reporting/e-invoicing adapters
 - `apps/api` — Fastify HTTP boundary and validation.
 - `packages/rules-hu` — Hungarian VAT ruleset and source metadata.
 
+The Hungary package also contains two deliberately separate arithmetic boundaries:
+
+- currency conversion resolves the statutory date/source first, then performs exact rational conversion from caller-supplied documentary rate evidence;
+- invoice aggregation calculates both line-rounded and VAT-rate-summary-rounded outcomes and records which caller-selected policy produced the reported total.
+
+Neither boundary silently fetches or invents regulatory evidence, and a rounding policy is not represented as a statutory classification.
+
 Future packages should be added by capability, for example:
 
 - `packages/domain`

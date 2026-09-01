@@ -9,13 +9,13 @@ describe('Hungary VAT API Phase 1', () => {
   it('returns the current rate catalogue including 0%', async () => {
     const response = await app().inject({ method: 'GET', url: '/v1/hu/vat/rates?effectiveDate=2026-09-01' });
     expect(response.statusCode).toBe(200);
-    expect(response.json().rulesetId).toBe('HU-VAT-2026-006');
+    expect(response.json().rulesetId).toBe('HU-VAT-2026-007');
   });
 
   it('publishes the OpenAPI 3.0 contract and Swagger JSON', async () => {
     const direct = await app().inject({ method: 'GET', url: '/openapi.json' });
     expect(direct.statusCode).toBe(200);
-    expect(direct.json()).toMatchObject({ openapi: '3.0.3', info: { version: '0.6.0' } });
+    expect(direct.json()).toMatchObject({ openapi: '3.0.3', info: { version: '0.7.0' } });
 
     const swagger = await app().inject({ method: 'GET', url: '/docs/json' });
     expect(swagger.statusCode).toBe(200);
@@ -24,6 +24,8 @@ describe('Hungary VAT API Phase 1', () => {
     expect(swagger.json().paths).toHaveProperty('/v1/hu/vat/exemptions/property-rental');
     expect(swagger.json().paths).toHaveProperty('/v1/hu/vat/exemptions/property-sale');
     expect(swagger.json().paths).toHaveProperty('/v1/hu/vat/reverse-charge/property-sale');
+    expect(swagger.json().paths).toHaveProperty('/v1/hu/vat/currency/convert-to-huf');
+    expect(swagger.json().paths).toHaveProperty('/v1/hu/vat/invoices/aggregate');
   });
 
   it('classifies supported 18% and 5% products', async () => {
@@ -51,7 +53,7 @@ describe('Hungary VAT API Phase 1', () => {
       }
     });
     expect(response.statusCode).toBe(200);
-    expect(response.json()).toMatchObject({ rulesetId: 'HU-VAT-2026-006', status: 'exempt', exemptionCode: 'HU_85_1_C_HEALTHCARE' });
+    expect(response.json()).toMatchObject({ rulesetId: 'HU-VAT-2026-007', status: 'exempt', exemptionCode: 'HU_85_1_C_HEALTHCARE' });
   });
 
   it('evaluates property-rental exemption and statutory exceptions', async () => {
@@ -82,7 +84,7 @@ describe('Hungary VAT API Phase 1', () => {
     });
     expect(oldProperty.statusCode).toBe(200);
     expect(oldProperty.json()).toMatchObject({
-      rulesetId: 'HU-VAT-2026-006', status: 'exempt', treatment: 'exempt', treatmentCode: 'HU_86_1_J_OLD_BUILT_PROPERTY_EXEMPT'
+      rulesetId: 'HU-VAT-2026-007', status: 'exempt', treatment: 'exempt', treatmentCode: 'HU_86_1_J_OLD_BUILT_PROPERTY_EXEMPT'
     });
 
     const changedProperty = await app().inject({
@@ -127,7 +129,7 @@ describe('Hungary VAT API Phase 1', () => {
     });
     expect(response.statusCode).toBe(200);
     expect(response.json()).toMatchObject({
-      rulesetId: 'HU-VAT-2026-006', status: 'reverse_charge', eligible: true,
+      rulesetId: 'HU-VAT-2026-007', status: 'reverse_charge', eligible: true,
       propertySaleTreatmentCode: 'HU_88_PROPERTY_SALE_TAXABLE_ELECTION'
     });
 
@@ -167,7 +169,7 @@ describe('Hungary VAT API Phase 1', () => {
     });
     expect(response.statusCode).toBe(200);
     expect(response.json()).toMatchObject({
-      rulesetId: 'HU-VAT-2026-006', status: 'eligible_within_threshold', thresholdMode: 'time_proportional', thresholdHuf: '10082191', activeDays: 184, daysInYear: 365
+      rulesetId: 'HU-VAT-2026-007', status: 'eligible_within_threshold', thresholdMode: 'time_proportional', thresholdHuf: '10082191', activeDays: 184, daysInYear: 365
     });
   });
 
@@ -177,7 +179,77 @@ describe('Hungary VAT API Phase 1', () => {
       payload: { effectiveDate: '2026-09-01', amount: '100.00', amountType: 'net', treatment: 'taxable', rate: 27 }
     });
     expect(response.statusCode).toBe(200);
-    expect(response.json()).toMatchObject({ rulesetId: 'HU-VAT-2026-006', netAmount: '100.00', vatAmount: '27.00', grossAmount: '127.00' });
+    expect(response.json()).toMatchObject({ rulesetId: 'HU-VAT-2026-007', netAmount: '100.00', vatAmount: '27.00', grossAmount: '127.00' });
+  });
+
+  it('converts a foreign-currency amount using the statutory invoice-date rule', async () => {
+    const response = await app().inject({
+      method: 'POST', url: '/v1/hu/vat/currency/convert-to-huf',
+      payload: {
+        currency: 'EUR', amount: '100.00', outputScale: 2,
+        transaction: { kind: 'periodic_settlement_section_58', invoiceIssueDate: '2026-08-20' },
+        rate: {
+          source: 'mnb', quotedCurrencyUnits: '1', hufAmount: '395.12', ratePublicationDate: '2026-08-20',
+          latestValidRateConfirmed: true, electionDeclaredToNavBeforeUse: true,
+          electionAppliesToAllForeignCurrencyTransactions: true, electionLockInObserved: true,
+          exclusiveMnbOrEcbChoiceConfirmed: true
+        }
+      }
+    });
+    expect(response.statusCode).toBe(200);
+    expect(response.json()).toMatchObject({
+      rulesetId: 'HU-VAT-2026-007', status: 'converted', amountHuf: '39512.00',
+      conversionDate: '2026-08-20', dateRule: 'invoice_issue_date'
+    });
+  });
+
+  it('returns manual_review instead of converting with unconfirmed rate evidence', async () => {
+    const response = await app().inject({
+      method: 'POST', url: '/v1/hu/vat/currency/convert-to-huf',
+      payload: {
+        currency: 'EUR', amount: '100', transaction: { kind: 'other', performanceDate: '2026-09-01' },
+        rate: {
+          source: 'domestic_credit_institution_sell', quotedCurrencyUnits: '1', hufAmount: '395.12',
+          ratePublicationDate: '2026-09-01', latestValidRateConfirmed: false,
+          institutionAuthorisedForDomesticCurrencyExchange: true
+        }
+      }
+    });
+    expect(response.statusCode).toBe(200);
+    expect(response.json()).toMatchObject({ status: 'manual_review', rateSource: 'domestic_credit_institution_sell' });
+    expect(response.json()).not.toHaveProperty('amountHuf');
+  });
+
+  it('reconciles per-line and per-rate-summary invoice rounding', async () => {
+    const response = await app().inject({
+      method: 'POST', url: '/v1/hu/vat/invoices/aggregate',
+      payload: {
+        effectiveDate: '2026-09-01', currency: 'HUF', scale: 2, roundingPolicy: 'per_vat_rate_summary',
+        lines: [
+          { lineId: '1', netAmount: '0.01', treatment: 'taxable', rate: 27 },
+          { lineId: '2', netAmount: '0.01', treatment: 'taxable', rate: 27 },
+          { lineId: '3', netAmount: '0.01', treatment: 'taxable', rate: 27 }
+        ]
+      }
+    });
+    expect(response.statusCode).toBe(200);
+    expect(response.json()).toMatchObject({
+      rulesetId: 'HU-VAT-2026-007',
+      totals: { lineRoundedVatAmount: '0.00', rateSummaryRoundedVatAmount: '0.01', roundingDifference: '0.01', selectedVatAmount: '0.01' },
+      reconciliation: { differenceDetected: true, allocationRequiredForLineReconciliation: true }
+    });
+  });
+
+  it('rejects an invoice line whose treatment and rate contradict each other', async () => {
+    const response = await app().inject({
+      method: 'POST', url: '/v1/hu/vat/invoices/aggregate',
+      payload: {
+        effectiveDate: '2026-09-01', currency: 'HUF', roundingPolicy: 'per_line',
+        lines: [{ lineId: 'exempt', netAmount: '10.00', treatment: 'exempt', rate: 27 }]
+      }
+    });
+    expect(response.statusCode).toBe(422);
+    expect(response.json()).toMatchObject({ error: { code: 'invoice_aggregation_failed', requestId: expect.any(String) } });
   });
 
   it('returns a stable error envelope for invalid requests', async () => {

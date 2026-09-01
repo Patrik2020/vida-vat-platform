@@ -4,13 +4,15 @@ export const OPENAPI_DOCUMENT: OpenAPIV3.Document = {
   openapi: '3.0.3',
   info: {
     title: 'ViDA Hungary VAT API',
-    version: '0.6.0',
+    version: '0.7.0',
     description: 'Hungary-first VAT/compliance API. Phase 1 is deliberately fail-closed: unsupported or unverified legal classifications require review instead of guessing.'
   },
   tags: [
     { name: 'System' },
     { name: 'VAT rates' },
     { name: 'VAT calculation' },
+    { name: 'Currency' },
+    { name: 'Invoice arithmetic' },
     { name: 'Tax point' },
     { name: 'Reverse charge' },
     { name: 'Exemptions' },
@@ -55,6 +57,32 @@ export const OPENAPI_DOCUMENT: OpenAPIV3.Document = {
         requestBody: { required: true, content: { 'application/json': { schema: { $ref: '#/components/schemas/VatCalculationRequest' } } } },
         responses: {
           '200': { description: 'VAT calculation', content: { 'application/json': { schema: { type: 'object' } } } },
+          '400': { $ref: '#/components/responses/BadRequest' },
+          '422': { $ref: '#/components/responses/UnprocessableEntity' }
+        }
+      }
+    },
+    '/v1/hu/vat/currency/convert-to-huf': {
+      post: {
+        tags: ['Currency'],
+        summary: 'Convert a foreign-currency VAT amount to HUF under Áfa tv. 80–80/A. §',
+        description: 'Resolves the statutory exchange-rate date from the transaction context, validates caller-supplied bank/MNB/EKB evidence, and converts with exact decimal arithmetic. Missing statutory evidence returns manual_review; import conversion under §81 remains outside this endpoint.',
+        requestBody: { required: true, content: { 'application/json': { schema: { $ref: '#/components/schemas/CurrencyConversionRequest' } } } },
+        responses: {
+          '200': { description: 'Converted amount or fail-closed manual-review result', content: { 'application/json': { schema: { $ref: '#/components/schemas/CurrencyConversionResponse' } } } },
+          '400': { $ref: '#/components/responses/BadRequest' },
+          '422': { $ref: '#/components/responses/UnprocessableEntity' }
+        }
+      }
+    },
+    '/v1/hu/vat/invoices/aggregate': {
+      post: {
+        tags: ['Invoice arithmetic'],
+        summary: 'Calculate auditable invoice-line and VAT-rate-summary rounding',
+        description: 'Calculates both per-line and per-VAT-rate-summary results, exposes their exact difference, and applies the explicitly caller-selected computational policy. It does not claim that either policy is universally mandated by statute.',
+        requestBody: { required: true, content: { 'application/json': { schema: { $ref: '#/components/schemas/InvoiceAggregationRequest' } } } },
+        responses: {
+          '200': { description: 'Invoice arithmetic and reconciliation', content: { 'application/json': { schema: { $ref: '#/components/schemas/InvoiceAggregationResponse' } } } },
           '400': { $ref: '#/components/responses/BadRequest' },
           '422': { $ref: '#/components/responses/UnprocessableEntity' }
         }
@@ -302,6 +330,70 @@ export const OPENAPI_DOCUMENT: OpenAPIV3.Document = {
       VatCalculationRequest: {
         type: 'object', required: ['effectiveDate', 'amount', 'amountType', 'treatment'],
         properties: { effectiveDate: { type: 'string', format: 'date' }, amount: { type: 'string', pattern: '^\\d+(\\.\\d+)?$' }, amountType: { type: 'string', enum: ['net', 'gross'] }, treatment: { type: 'string', enum: ['taxable', 'exempt', 'reverse_charge'] }, rate: { type: 'number', enum: [0, 5, 18, 27] }, scale: { type: 'integer', minimum: 0, maximum: 6 } }
+      },
+      CurrencyConversionRequest: {
+        type: 'object', required: ['currency', 'amount', 'transaction', 'rate'],
+        properties: {
+          currency: { type: 'string', pattern: '^[A-Z]{3}$', description: 'Three-letter non-HUF source currency.' },
+          amount: { type: 'string', pattern: '^\\d+(\\.\\d+)?$' },
+          outputScale: { type: 'integer', minimum: 0, maximum: 6, default: 2 },
+          transaction: {
+            oneOf: [
+              { type: 'object', required: ['kind', 'taxLiabilityDeterminationDate'], properties: { kind: { type: 'string', enum: ['intra_community_acquisition'] }, taxLiabilityDeterminationDate: { type: 'string', format: 'date' } } },
+              { type: 'object', required: ['kind', 'taxLiabilityDeterminationDate'], properties: { kind: { type: 'string', enum: ['advance_payment'] }, taxLiabilityDeterminationDate: { type: 'string', format: 'date' } } },
+              { type: 'object', required: ['kind', 'taxLiabilityDeterminationDate'], properties: { kind: { type: 'string', enum: ['section_60'] }, taxLiabilityDeterminationDate: { type: 'string', format: 'date' } } },
+              { type: 'object', required: ['kind', 'invoiceIssueDate'], properties: { kind: { type: 'string', enum: ['periodic_settlement_section_58'] }, invoiceIssueDate: { type: 'string', format: 'date' } } },
+              { type: 'object', required: ['kind', 'performanceDate'], properties: { kind: { type: 'string', enum: ['other'] }, performanceDate: { type: 'string', format: 'date' } } }
+            ]
+          },
+          rate: {
+            oneOf: [
+              {
+                type: 'object', required: ['source', 'quotedCurrencyUnits', 'hufAmount', 'ratePublicationDate', 'latestValidRateConfirmed', 'institutionAuthorisedForDomesticCurrencyExchange'],
+                properties: { source: { type: 'string', enum: ['domestic_credit_institution_sell'] }, quotedCurrencyUnits: { type: 'string' }, hufAmount: { type: 'string' }, ratePublicationDate: { type: 'string', format: 'date' }, latestValidRateConfirmed: { type: 'boolean' }, institutionAuthorisedForDomesticCurrencyExchange: { type: 'boolean' } }
+              },
+              {
+                type: 'object', required: ['source', 'quotedCurrencyUnits', 'hufAmount', 'ratePublicationDate', 'latestValidRateConfirmed', 'electionDeclaredToNavBeforeUse', 'electionAppliesToAllForeignCurrencyTransactions', 'electionLockInObserved', 'exclusiveMnbOrEcbChoiceConfirmed'],
+                properties: { source: { type: 'string', enum: ['mnb'] }, quotedCurrencyUnits: { type: 'string' }, hufAmount: { type: 'string' }, ratePublicationDate: { type: 'string', format: 'date' }, latestValidRateConfirmed: { type: 'boolean' }, electionDeclaredToNavBeforeUse: { type: 'boolean' }, electionAppliesToAllForeignCurrencyTransactions: { type: 'boolean' }, electionLockInObserved: { type: 'boolean' }, exclusiveMnbOrEcbChoiceConfirmed: { type: 'boolean' } }
+              },
+              {
+                type: 'object', required: ['source', 'hufUnitsPerEur', 'ratePublicationDate', 'latestValidRateConfirmed', 'electionDeclaredToNavBeforeUse', 'electionAppliesToAllForeignCurrencyTransactions', 'electionLockInObserved', 'exclusiveMnbOrEcbChoiceConfirmed'],
+                properties: { source: { type: 'string', enum: ['ecb'] }, hufUnitsPerEur: { type: 'string' }, foreignCurrencyUnitsPerEur: { type: 'string', description: 'Required when currency is not EUR.' }, ratePublicationDate: { type: 'string', format: 'date' }, latestValidRateConfirmed: { type: 'boolean' }, electionDeclaredToNavBeforeUse: { type: 'boolean' }, electionAppliesToAllForeignCurrencyTransactions: { type: 'boolean' }, electionLockInObserved: { type: 'boolean' }, exclusiveMnbOrEcbChoiceConfirmed: { type: 'boolean' } }
+              },
+              {
+                type: 'object', required: ['source', 'precedingQuarterEuroReferenceConfirmed'],
+                properties: { source: { type: 'string', enum: ['unquoted_currency_section_80_5'] }, precedingQuarterEuroReferenceConfirmed: { type: 'boolean' } }
+              }
+            ]
+          }
+        }
+      },
+      CurrencyConversionResponse: {
+        type: 'object', required: ['rulesetId', 'status', 'currency', 'inputAmount', 'conversionDate', 'dateRule', 'rateSource', 'legalBasis', 'sourceIds', 'notice'],
+        properties: {
+          rulesetId: { type: 'string' }, status: { type: 'string', enum: ['converted', 'manual_review'] }, currency: { type: 'string' }, inputAmount: { type: 'string' }, amountHuf: { type: 'string' }, outputScale: { type: 'integer' },
+          conversionDate: { type: 'string', format: 'date' }, dateRule: { type: 'string', enum: ['tax_liability_determination_date', 'invoice_issue_date', 'performance_date'] },
+          rateSource: { type: 'string', enum: ['domestic_credit_institution_sell', 'mnb', 'ecb', 'unquoted_currency_section_80_5'] }, ratePublicationDate: { type: 'string', format: 'date' },
+          legalBasis: { type: 'string' }, sourceIds: { type: 'array', items: { type: 'string' } }, rounding: { type: 'string' }, reason: { type: 'string' }, notice: { type: 'string' }
+        }
+      },
+      InvoiceAggregationRequest: {
+        type: 'object', required: ['effectiveDate', 'currency', 'roundingPolicy', 'lines'],
+        properties: {
+          effectiveDate: { type: 'string', format: 'date' }, currency: { type: 'string', pattern: '^[A-Z]{3}$' }, scale: { type: 'integer', minimum: 0, maximum: 6, default: 2 },
+          roundingPolicy: { type: 'string', enum: ['per_line', 'per_vat_rate_summary'] },
+          lines: {
+            type: 'array', minItems: 1, maxItems: 500,
+            items: { type: 'object', required: ['lineId', 'netAmount', 'treatment'], properties: { lineId: { type: 'string', minLength: 1, maxLength: 100 }, netAmount: { type: 'string', pattern: '^-?\\d+(\\.\\d+)?$' }, treatment: { type: 'string', enum: ['taxable', 'exempt', 'reverse_charge'] }, rate: { type: 'number', enum: [0, 5, 18, 27] } } }
+          }
+        }
+      },
+      InvoiceAggregationResponse: {
+        type: 'object', required: ['rulesetId', 'effectiveDate', 'currency', 'scale', 'roundingPolicy', 'roundingMode', 'policyNature', 'lines', 'summaries', 'totals', 'reconciliation', 'legalBasis', 'sourceIds', 'notice'],
+        properties: {
+          rulesetId: { type: 'string' }, effectiveDate: { type: 'string', format: 'date' }, currency: { type: 'string' }, scale: { type: 'integer' }, roundingPolicy: { type: 'string', enum: ['per_line', 'per_vat_rate_summary'] }, roundingMode: { type: 'string' }, policyNature: { type: 'string', enum: ['caller_selected_computational_policy'] },
+          lines: { type: 'array', items: { type: 'object' } }, summaries: { type: 'array', items: { type: 'object' } }, totals: { type: 'object' }, reconciliation: { type: 'object' }, legalBasis: { type: 'string' }, sourceIds: { type: 'array', items: { type: 'string' } }, notice: { type: 'string' }
+        }
       },
       DomesticConstructionReverseChargeRequest: {
         type: 'object', required: ['effectiveDate', 'supplierDomesticVatRegistered', 'recipientDomesticVatRegistered', 'supplierTaxPayableStatus', 'recipientTaxPayableStatus', 'constructionAssemblyWork', 'propertyActivity', 'authorityPermitOrNotificationRequired', 'requiredDeclarationProvided'],

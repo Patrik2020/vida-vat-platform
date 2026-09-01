@@ -1,6 +1,6 @@
 # Roadmap
 
-## Phase 0 — Foundation (current)
+## Phase 0 — Foundation — complete
 
 - monorepo and API skeleton;
 - Hungary rules package;
@@ -9,17 +9,31 @@
 - CI, type checks and tests;
 - architecture and regulatory-source documentation.
 
-## Phase 1 — Hungary VAT API MVP
+## Phase 1 — Hungary VAT API MVP — in progress
 
-- richer Hungarian VAT rate/category model;
-- authoritative classification mapping for reduced rates;
-- transaction taxonomy;
-- VAT exemption and reverse-charge rule foundations;
-- currency/rounding policy researched and implemented;
-- deterministic VAT calculation endpoints;
-- OpenAPI documentation;
-- API error contract;
-- expanded test fixtures based on official examples.
+### Implemented
+
+- richer Hungarian VAT rate model including 0%, 5%, 18% and 27%;
+- authoritative-source registry for coded rules;
+- partial fail-closed rate classification;
+- first deterministic 0% product classifications;
+- transaction treatment foundation (`taxable`, `exempt`, `reverse_charge`);
+- exact decimal VAT calculation from net or gross values;
+- periodic-settlement tax-point resolution under Áfa tv. 58. §;
+- domestic construction reverse-charge evaluator;
+- Fastify integration tests and rules-engine tests;
+- current API usage documentation.
+
+### Remaining Phase 1 work
+
+- broaden authoritative classification mappings for 5% and 18% rates;
+- formal exemption models, beginning with the most commercially relevant Hungarian cases;
+- deepen reverse-charge coverage beyond the supported construction scenario;
+- research and formalise invoice-level rounding/aggregation and currency rules;
+- machine-readable OpenAPI contract generated or validated against runtime schemas;
+- stable API error/version contract;
+- expanded fixtures based on official NAV examples;
+- regulatory refresh workflow so the verified-through window can advance safely.
 
 ## Phase 2 — Hungary compliance engine
 

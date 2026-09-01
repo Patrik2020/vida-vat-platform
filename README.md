@@ -25,18 +25,29 @@ Primary ViDA legal acts:
 - Council Regulation (EU) 2025/517
 - Council Implementing Regulation (EU) 2025/518
 
-## Initial scope
+## Hungary VAT API — Phase 1 MVP
 
-Phase 1 is a Hungary VAT rules API with:
+The current Hungary ruleset is `HU-VAT-2026-002`, verified through **2026-09-01**.
 
-- explicit effective-date handling;
-- versioned tax rules;
-- traceable rule/source metadata;
-- deterministic API behavior;
-- automated tests;
-- an architecture designed for additional EU Member States.
+Implemented foundations:
 
-The first ruleset exposes the currently verified Hungarian VAT rates (27%, 18%, 5%) and their legal-source metadata. Automatic product/service classification and tax calculation are deliberately deferred until their rule and rounding models are fully specified and tested.
+- effective-date and fail-closed regulatory guardrails;
+- 0%, 5%, 18% and 27% Hungarian VAT rate catalogue;
+- source metadata linked to NJT/NAV material;
+- partial, deterministic rate classification;
+- 0% qualifying daily-newspaper classification;
+- 0% qualifying prescription and human magistral medicine classification from 2026-09-01;
+- exact decimal VAT arithmetic from net or gross values;
+- taxable, exempt and reverse-charge computational treatments;
+- Áfa tv. 58. § periodic-settlement tax-point resolver;
+- domestic construction reverse-charge evaluator;
+- unit and Fastify integration tests.
+
+### Fail-closed classification
+
+The API does **not** infer a standard 27% rate when facts are insufficient. Unsupported or unproven reduced/zero-rate cases return `manual_review` instead.
+
+This is intentional. Hungarian reduced rates frequently depend on statutory product descriptions, VTSZ/KN classification and transaction-specific facts.
 
 ## Repository structure
 
@@ -44,9 +55,10 @@ The first ruleset exposes the currently verified Hungarian VAT rates (27%, 18%, 
 apps/
   api/                  Fastify HTTP API
 packages/
-  rules-hu/             Hungary VAT rules
+  rules-hu/             Hungary VAT rules and decision engine
 
 docs/
+  API.md
   ARCHITECTURE.md
   ROADMAP.md
   REGULATORY_SOURCES.md
@@ -65,10 +77,16 @@ pnpm dev
 
 The API defaults to `http://localhost:3000`.
 
-Initial endpoints:
+Current endpoints:
 
 - `GET /health`
 - `GET /v1/hu/vat/rates?effectiveDate=2026-09-01`
+- `POST /v1/hu/vat/classify-rate`
+- `POST /v1/hu/vat/calculate`
+- `POST /v1/hu/vat/tax-point/periodic`
+- `POST /v1/hu/vat/reverse-charge/domestic-construction`
+
+See `docs/API.md` for request/response examples and current MVP limitations.
 
 ## Compliance principle
 
@@ -85,4 +103,6 @@ The software is infrastructure and does not replace professional tax or legal ad
 
 ## Status
 
-Early foundation / architecture phase.
+**Phase 1 — Hungary VAT API MVP in active development.**
+
+The deterministic core is now functional. Remaining Phase 1 work focuses on broader reduced-rate mappings, exemption models, API schema/OpenAPI hardening, official-example fixtures and production-grade error/version contracts.

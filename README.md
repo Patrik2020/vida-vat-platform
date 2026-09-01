@@ -54,6 +54,20 @@ This is intentional. Hungarian reduced rates frequently depend on statutory prod
 
 The AAM evaluator is similarly bounded: newly registered businesses currently return `manual_review` because the Áfa tv. 189. § time-proportional threshold logic has not yet been separately modelled.
 
+## Automated regulatory monitoring
+
+The repository now contains a separate regulatory-monitor package and scheduled GitHub Actions workflow.
+
+It watches the current Áfa tv., NAV VAT discovery/guidance pages, the European Commission ViDA implementation page and the three core 2025 ViDA legal acts on EUR-Lex.
+
+The monitor follows this safety flow:
+
+`official source → normalized observation → SHA-256/diff → review issue → human review → tested PR → ruleset`
+
+A source change never edits a production VAT rule automatically. Observed source history is stored on a separate `regulatory-state` branch, while approved rules remain on `main`. Source failures also fail safely: the previous observation is retained and a monitor issue is opened instead of treating an error page as new law.
+
+See `docs/REGULATORY_MONITOR.md` for the design and operating model.
+
 ## Repository structure
 
 ```text
@@ -61,12 +75,14 @@ apps/
   api/                  Fastify HTTP API
 packages/
   rules-hu/             Hungary VAT rules and decision engine
+  regulatory-monitor/   official-source change detection and review automation
 
 docs/
   API.md
   ARCHITECTURE.md
   ROADMAP.md
   REGULATORY_SOURCES.md
+  REGULATORY_MONITOR.md
 ```
 
 ## Local development
@@ -78,6 +94,12 @@ pnpm install
 pnpm build
 pnpm test
 pnpm dev
+```
+
+A local regulatory-source check can be run with:
+
+```bash
+pnpm regulatory:check
 ```
 
 The API defaults to `http://localhost:3000`.
@@ -111,4 +133,4 @@ The software is infrastructure and does not replace professional tax or legal ad
 
 **Phase 1 — Hungary VAT API MVP in active development.**
 
-The deterministic core is functional and now includes first reduced-rate and AAM threshold modules. Remaining Phase 1 work focuses on broader 5%/18% mappings, fuller exemption models, Áfa tv. 189. § new-business AAM handling, API schema/OpenAPI hardening, official-example fixtures and production-grade error/version contracts.
+The deterministic core is functional, the first reduced-rate/AAM modules are live, and regulatory-source monitoring is now automated with human approval retained for every production rule change. Remaining Phase 1 work focuses on broader 5%/18% mappings, fuller exemption models, Áfa tv. 189. § new-business AAM handling, API schema/OpenAPI hardening, official-example fixtures and production-grade error/version contracts.

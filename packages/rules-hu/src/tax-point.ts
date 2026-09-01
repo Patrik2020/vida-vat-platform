@@ -1,5 +1,5 @@
 import { addDays, assertIsoDate } from './date-utils.js';
-import { assertSupportedDate } from './rates.js';
+import { HUNGARY_VAT_RULESET, assertSupportedDate } from './rates.js';
 
 export type PeriodicTaxPointInput = {
   periodEnd: string;
@@ -30,7 +30,7 @@ export function resolvePeriodicTaxPoint(input: PeriodicTaxPointInput) {
   assertSupportedDate(taxPoint);
 
   return {
-    rulesetId: 'HU-VAT-2026-002',
+    rulesetId: HUNGARY_VAT_RULESET.id,
     taxPoint,
     rule,
     legalBasis: 'Áfa tv. 58. § (1) és (1a)',

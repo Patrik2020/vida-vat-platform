@@ -1,4 +1,6 @@
 import Fastify from 'fastify';
+import fastifySwagger from '@fastify/swagger';
+import fastifySwaggerUi from '@fastify/swagger-ui';
 import { z } from 'zod';
 import {
   calculateHungaryVat,
@@ -8,19 +10,32 @@ import {
   getHungaryVatRates,
   resolvePeriodicTaxPoint
 } from '@vida/rules-hu';
+import { sendApiError } from './errors.js';
+import { OPENAPI_DOCUMENT } from './openapi.js';
 
 const isoDate = z.iso.date();
 
 export function buildServer() {
   const app = Fastify({ logger: true });
 
-  app.get('/health', async () => ({ status: 'ok', service: 'vida-vat-platform', version: '0.3.0' }));
+  app.register(fastifySwagger, {
+    mode: 'static',
+    specification: { document: OPENAPI_DOCUMENT }
+  });
+  app.register(fastifySwaggerUi, {
+    routePrefix: '/docs',
+    uiConfig: { docExpansion: 'list', deepLinking: true },
+    staticCSP: true
+  });
+
+  app.get('/health', async () => ({ status: 'ok', service: 'vida-vat-platform', version: '0.4.0' }));
+  app.get('/openapi.json', async () => OPENAPI_DOCUMENT);
 
   app.get('/v1/hu/vat/rates', async (request, reply) => {
     const parsed = z.object({ effectiveDate: isoDate }).safeParse(request.query);
-    if (!parsed.success) return reply.code(400).send({ error: 'invalid_request', message: 'effectiveDate is required in YYYY-MM-DD format' });
+    if (!parsed.success) return sendApiError(request, reply, 400, 'invalid_request', 'effectiveDate is required in YYYY-MM-DD format', parsed.error.issues);
     try { return getHungaryVatRates(parsed.data.effectiveDate); }
-    catch (error) { return reply.code(422).send({ error: 'unsupported_effective_date', message: error instanceof Error ? error.message : 'Unsupported effective date' }); }
+    catch (error) { return sendApiError(request, reply, 422, 'unsupported_effective_date', error instanceof Error ? error.message : 'Unsupported effective date'); }
   });
 
   app.post('/v1/hu/vat/classify-rate', async (request, reply) => {
@@ -41,9 +56,9 @@ export function buildServer() {
         z.object({ kind: z.literal('declared_rate'), rate: z.union([z.literal(0), z.literal(5), z.literal(18), z.literal(27)]), legalBasisConfirmed: z.boolean() })
       ])
     }).safeParse(request.body);
-    if (!parsed.success) return reply.code(400).send({ error: 'invalid_request', details: parsed.error.issues });
+    if (!parsed.success) return sendApiError(request, reply, 400, 'invalid_request', 'Request validation failed', parsed.error.issues);
     try { return classifyHungaryVatRate(parsed.data.effectiveDate, parsed.data.classification); }
-    catch (error) { return reply.code(422).send({ error: 'classification_failed', message: error instanceof Error ? error.message : 'Classification failed' }); }
+    catch (error) { return sendApiError(request, reply, 422, 'classification_failed', error instanceof Error ? error.message : 'Classification failed'); }
   });
 
   app.post('/v1/hu/vat/calculate', async (request, reply) => {
@@ -52,16 +67,16 @@ export function buildServer() {
       treatment: z.enum(['taxable', 'exempt', 'reverse_charge']), rate: z.union([z.literal(0), z.literal(5), z.literal(18), z.literal(27)]).optional(),
       scale: z.number().int().min(0).max(6).optional()
     }).safeParse(request.body);
-    if (!parsed.success) return reply.code(400).send({ error: 'invalid_request', details: parsed.error.issues });
+    if (!parsed.success) return sendApiError(request, reply, 400, 'invalid_request', 'Request validation failed', parsed.error.issues);
     try { return calculateHungaryVat(parsed.data); }
-    catch (error) { return reply.code(422).send({ error: 'calculation_failed', message: error instanceof Error ? error.message : 'Calculation failed' }); }
+    catch (error) { return sendApiError(request, reply, 422, 'calculation_failed', error instanceof Error ? error.message : 'Calculation failed'); }
   });
 
   app.post('/v1/hu/vat/tax-point/periodic', async (request, reply) => {
     const parsed = z.object({ periodEnd: isoDate, invoiceDate: isoDate, dueDate: isoDate }).safeParse(request.body);
-    if (!parsed.success) return reply.code(400).send({ error: 'invalid_request', details: parsed.error.issues });
+    if (!parsed.success) return sendApiError(request, reply, 400, 'invalid_request', 'Request validation failed', parsed.error.issues);
     try { return resolvePeriodicTaxPoint(parsed.data); }
-    catch (error) { return reply.code(422).send({ error: 'tax_point_failed', message: error instanceof Error ? error.message : 'Tax point resolution failed' }); }
+    catch (error) { return sendApiError(request, reply, 422, 'tax_point_failed', error instanceof Error ? error.message : 'Tax point resolution failed'); }
   });
 
   app.post('/v1/hu/vat/reverse-charge/domestic-construction', async (request, reply) => {
@@ -71,21 +86,21 @@ export function buildServer() {
       propertyActivity: z.enum(['create', 'expand', 'transform', 'demolish', 'change_purpose', 'other']),
       authorityPermitOrNotificationRequired: z.boolean(), requiredDeclarationProvided: z.boolean()
     }).safeParse(request.body);
-    if (!parsed.success) return reply.code(400).send({ error: 'invalid_request', details: parsed.error.issues });
+    if (!parsed.success) return sendApiError(request, reply, 400, 'invalid_request', 'Request validation failed', parsed.error.issues);
     try { return evaluateDomesticConstructionReverseCharge(parsed.data); }
-    catch (error) { return reply.code(422).send({ error: 'reverse_charge_evaluation_failed', message: error instanceof Error ? error.message : 'Reverse-charge evaluation failed' }); }
+    catch (error) { return sendApiError(request, reply, 422, 'reverse_charge_evaluation_failed', error instanceof Error ? error.message : 'Reverse-charge evaluation failed'); }
   });
 
   app.post('/v1/hu/vat/exemptions/aam/threshold', async (request, reply) => {
     const parsed = z.object({
-      effectiveDate: isoDate, establishedBefore2026: z.boolean(), valuesCalculatedUnderSection188: z.boolean(),
+      effectiveDate: isoDate, establishedBefore2026: z.boolean(), registrationDate: isoDate.optional(), valuesCalculatedUnderSection188: z.boolean(),
       priorYearRelevantDomesticTurnoverHuf: z.string().regex(/^\d+$/),
       currentYearExpectedRelevantDomesticTurnoverHuf: z.string().regex(/^\d+$/),
       currentYearActualRelevantDomesticTurnoverHuf: z.string().regex(/^\d+$/)
     }).safeParse(request.body);
-    if (!parsed.success) return reply.code(400).send({ error: 'invalid_request', details: parsed.error.issues });
+    if (!parsed.success) return sendApiError(request, reply, 400, 'invalid_request', 'Request validation failed', parsed.error.issues);
     try { return evaluateAamThreshold2026(parsed.data); }
-    catch (error) { return reply.code(422).send({ error: 'aam_threshold_evaluation_failed', message: error instanceof Error ? error.message : 'AAM threshold evaluation failed' }); }
+    catch (error) { return sendApiError(request, reply, 422, 'aam_threshold_evaluation_failed', error instanceof Error ? error.message : 'AAM threshold evaluation failed'); }
   });
 
   return app;

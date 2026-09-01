@@ -61,5 +61,12 @@ export const HUNGARY_VAT_SOURCES: RegulatorySource[] = [
     title: 'Ingatlan bérbeadásának és egyéb hasznosításának adózása 2026',
     url: 'https://nav.gov.hu/pfile/file?path=%2Fugyfeliranytu%2Fnezzen-utana%2Finf_fuz%2F2026%2F10.-Ingatlan-berbeadasanak-es-egyeb-hasznositasanak-adozasa-2026.02.03',
     publishedAt: '2026-02-03'
+  },
+  {
+    id: 'NAV-PROPERTY-RENTAL-2026',
+    authority: 'Nemzeti Adó- és Vámhivatal',
+    title: 'Ingatlan bérbeadásának és egyéb hasznosításának adózása 2026 — áfaszabályok',
+    url: 'https://nav.gov.hu/pfile/file?path=%2Fugyfeliranytu%2Fnezzen-utana%2Finf_fuz%2F2026%2F10.-Ingatlan-berbeadasanak-es-egyeb-hasznositasanak-adozasa-2026.02.03',
+    publishedAt: '2026-02-03'
   }
 ];

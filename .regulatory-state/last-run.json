@@ -1,21 +1,21 @@
 {
-  "checkedAt": "2026-09-01T05:01:49.669Z",
+  "checkedAt": "2026-09-01T05:05:05.543Z",
   "repository": "Patrik2020/vida-vat-platform",
   "totals": {
     "sources": 7,
-    "bootstrap": 0,
+    "bootstrap": 1,
     "unchanged": 6,
     "changed": 0,
-    "errors": 1
+    "errors": 0
   },
   "results": [
     {
       "sourceId": "HU-AFA-ACT",
-      "status": "error",
+      "status": "bootstrap",
       "previousSha256": null,
-      "currentSha256": null,
+      "currentSha256": "6141b0e6e99527ac7ce27a9dda402d962bffdb4fcc930b67fdde6bbbac9c5e7c",
       "issueCreated": false,
-      "message": "native fetch failed: fetch failed; curl/IPv4 fallback failed: Command failed: curl --ipv4 --fail --location --silent --show-error --max-time 25 --user-agent ViDA-Regulatory-Monitor/0.1 (+https://github.com/Patrik2020/vida-vat-platform) --header Accept: text/html,application/xhtml+xml,application/xml;q=0.9,text/plain;q=0.8,*/*;q=0.5 --header Accept-Language: hu-HU,hu;q=0.9,en;q=0.7 --write-out \n__VIDA_CURL_META__%{http_code}\t%{content_type}\t%{url_effective} https://njt.hu/jogszabaly/2007-127-00-00\ncurl: (56) Recv failure: Connection reset by peer\n"
+      "message": "Initial observation recorded without opening a change issue."
     },
     {
       "sourceId": "HU-NAV-VAT-INDEX",

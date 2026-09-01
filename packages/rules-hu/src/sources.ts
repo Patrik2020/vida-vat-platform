@@ -19,7 +19,7 @@ export const HUNGARY_VAT_SOURCES: RegulatorySource[] = [
     authority: 'Nemzeti Adó- és Vámhivatal',
     title: 'Tájékoztató a vényköteles gyógyszerek adómértékéről',
     url: 'https://nav.gov.hu/print/ado/afa/Tajekoztato_a_venykoteles_gyogyszerek_adomertekerol',
-    publishedAt: '2026-08-27'
+    publishedAt: '2026-08-24'
   },
   {
     id: 'NAV-RATE-18-2026',

@@ -6,8 +6,8 @@ export type VatCalculationInput = {
   amount: string;
   amountType: 'net' | 'gross';
   treatment: 'taxable' | 'exempt' | 'reverse_charge';
-  rate?: HungaryVatRate;
-  scale?: number;
+  rate?: HungaryVatRate | undefined;
+  scale?: number | undefined;
 };
 
 function parseMinorUnits(value: string, scale: number): bigint {

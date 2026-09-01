@@ -3,7 +3,7 @@ import { HUNGARY_VAT_SOURCES } from './sources.js';
 import type { HungaryVatRate, RateClassificationResult } from './types.js';
 
 export const HUNGARY_VAT_RULESET = {
-  id: 'HU-VAT-2026-003',
+  id: 'HU-VAT-2026-004',
   jurisdiction: 'HU',
   validFrom: '2026-01-01',
   verifiedThrough: '2026-09-01',

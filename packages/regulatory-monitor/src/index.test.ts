@@ -36,7 +36,7 @@ describe('regulatory monitor', () => {
 
     const third = await runRegulatoryMonitor({ stateDir, sources: [source], repository: null, githubToken: null, fetchImpl: () => response('<p>VAT RULE</p><p>18%</p>') });
     expect(third.totals.changed).toBe(1);
-    expect((await readFile(join(stateDir, 'TEST-SOURCE', 'content.txt'), 'utf8')).toContain('18%');
+    expect(await readFile(join(stateDir, 'TEST-SOURCE', 'content.txt'), 'utf8')).toContain('18%');
   });
 
   it('keeps previous observation when a source becomes invalid', async () => {
@@ -44,6 +44,6 @@ describe('regulatory monitor', () => {
     await runRegulatoryMonitor({ stateDir, sources: [source], repository: null, githubToken: null, fetchImpl: () => response('<p>VAT RULE</p><p>27%</p>') });
     const failed = await runRegulatoryMonitor({ stateDir, sources: [source], repository: null, githubToken: null, fetchImpl: () => response('<p>unrelated page</p>') });
     expect(failed.totals.errors).toBe(1);
-    expect((await readFile(join(stateDir, 'TEST-SOURCE', 'content.txt'), 'utf8')).toContain('27%');
+    expect(await readFile(join(stateDir, 'TEST-SOURCE', 'content.txt'), 'utf8')).toContain('27%');
   });
 });

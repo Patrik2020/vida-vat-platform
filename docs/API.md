@@ -2,7 +2,7 @@
 
 Base path: `/v1/hu/vat`
 
-Current ruleset: `HU-VAT-2026-006`
+Current ruleset: `HU-VAT-2026-007`
 
 Current regulatory verification window: through `2026-09-01`.
 
@@ -81,7 +81,7 @@ Example result:
 
 ```json
 {
-  "rulesetId": "HU-VAT-2026-006",
+  "rulesetId": "HU-VAT-2026-007",
   "effectiveDate": "2026-09-01",
   "status": "exempt",
   "exemptionCode": "HU_85_1_C_HEALTHCARE",
@@ -247,14 +247,117 @@ Example result:
 
 ```json
 {
-  "rulesetId": "HU-VAT-2026-006",
+  "rulesetId": "HU-VAT-2026-007",
   "netAmount": "100.00",
   "vatAmount": "27.00",
   "grossAmount": "127.00"
 }
 ```
 
-The engine uses integer minor-unit arithmetic and half-up rounding at the caller-selected scale. Invoice-level aggregation, foreign-currency conversion and final production rounding policy are not yet part of this endpoint.
+The engine uses integer minor-unit arithmetic and half-up rounding at the caller-selected scale. This remains a single-amount helper; use the dedicated endpoints below when exchange-rate evidence or invoice aggregation must be auditable.
+
+## POST `/currency/convert-to-huf`
+
+Resolves the applicable Áfa tv. 80. § exchange-rate date and converts caller-supplied, documented foreign-currency rate evidence to HUF without binary floating point.
+
+| Transaction kind | Date used | Legal path |
+|---|---|---|
+| `intra_community_acquisition` | `taxLiabilityDeterminationDate` | 80. § (1) a) |
+| `advance_payment` | `taxLiabilityDeterminationDate` | 80. § (1) a) |
+| `section_60` | `taxLiabilityDeterminationDate` | 80. § (1) a) |
+| `periodic_settlement_section_58` | `invoiceIssueDate` | 80. § (1) b) |
+| `other` | `performanceDate` | 80. § (1) c) |
+
+Supported rate-source paths:
+
+- `domestic_credit_institution_sell` — the institution's domestic currency-exchange authorisation and latest-valid-rate status must be confirmed;
+- `mnb` — prior NAV declaration, all-transaction scope, statutory lock-in and exclusive MNB-versus-EKB choice must be confirmed;
+- `ecb` — the same election guards apply; non-EUR currencies are converted through the supplied currency/EUR and HUF/EUR observations;
+- `unquoted_currency_section_80_5` — recognised, but currently returns `manual_review` because the two-stage quarterly reference adapter is not automated.
+
+MNB example:
+
+```json
+{
+  "currency": "EUR",
+  "amount": "100.00",
+  "outputScale": 2,
+  "transaction": {
+    "kind": "periodic_settlement_section_58",
+    "invoiceIssueDate": "2026-08-20"
+  },
+  "rate": {
+    "source": "mnb",
+    "quotedCurrencyUnits": "1",
+    "hufAmount": "395.12",
+    "ratePublicationDate": "2026-08-20",
+    "latestValidRateConfirmed": true,
+    "electionDeclaredToNavBeforeUse": true,
+    "electionAppliesToAllForeignCurrencyTransactions": true,
+    "electionLockInObserved": true,
+    "exclusiveMnbOrEcbChoiceConfirmed": true
+  }
+}
+```
+
+Successful result excerpt:
+
+```json
+{
+  "rulesetId": "HU-VAT-2026-007",
+  "status": "converted",
+  "amountHuf": "39512.00",
+  "conversionDate": "2026-08-20",
+  "dateRule": "invoice_issue_date",
+  "rateSource": "mnb"
+}
+```
+
+Incomplete or contradictory statutory evidence produces `status: "manual_review"` and no `amountHuf`. The endpoint does not fetch or independently certify a historical quote; it validates the supplied evidence envelope and calculates it exactly. Import conversion under Áfa tv. 81. § and modification/correction-specific exchange-rate treatment are outside this endpoint, so its amount input is non-negative.
+
+## POST `/invoices/aggregate`
+
+Calculates both per-line and per-VAT-rate-summary VAT rounding, reports the exact difference and applies the explicitly selected computational policy.
+
+```json
+{
+  "effectiveDate": "2026-09-01",
+  "currency": "HUF",
+  "scale": 2,
+  "roundingPolicy": "per_vat_rate_summary",
+  "lines": [
+    { "lineId": "1", "netAmount": "0.01", "treatment": "taxable", "rate": 27 },
+    { "lineId": "2", "netAmount": "0.01", "treatment": "taxable", "rate": 27 },
+    { "lineId": "3", "netAmount": "0.01", "treatment": "taxable", "rate": 27 }
+  ]
+}
+```
+
+For this deliberately rounding-sensitive example, each line rounds to `0.00` VAT while the 27% summary rounds to `0.01`:
+
+```json
+{
+  "roundingPolicy": "per_vat_rate_summary",
+  "policyNature": "caller_selected_computational_policy",
+  "totals": {
+    "netAmount": "0.03",
+    "lineRoundedVatAmount": "0.00",
+    "rateSummaryRoundedVatAmount": "0.01",
+    "roundingDifference": "0.01",
+    "selectedVatAmount": "0.01",
+    "selectedGrossAmount": "0.04"
+  },
+  "reconciliation": {
+    "differenceDetected": true,
+    "allocationRequiredForLineReconciliation": true,
+    "selectedPolicyReconcilesTo": "sum_of_rate_summary_rounded_vat"
+  }
+}
+```
+
+Taxable lines require a caller-classified rate of 0, 5, 18 or 27. Exempt and reverse-charge lines must not carry a seller VAT rate and remain separate summary groups. Signed amounts are supported for arithmetic on corrections, but document-level correction eligibility remains a separate compliance decision.
+
+The endpoint intentionally does not declare either rounding scope universally mandatory and does not silently allocate a summary difference to a line. That allocation is a future, explicit invoice-format policy.
 
 ## POST `/tax-point/periodic`
 
@@ -316,6 +419,8 @@ Current error codes:
 - `unsupported_effective_date`;
 - `classification_failed`;
 - `calculation_failed`;
+- `currency_conversion_failed`;
+- `invoice_aggregation_failed`;
 - `tax_point_failed`;
 - `reverse_charge_evaluation_failed`;
 - `aam_threshold_evaluation_failed`;
@@ -338,5 +443,7 @@ The MVP keeps separate:
 3. **taxpayer exemption** — e.g. AAM;
 4. **tax point / mechanism** — when and by whom VAT is accounted for;
 5. **arithmetic** — exact net/VAT/gross computation.
+6. **currency evidence** — statutory conversion date/source and caller-supplied historical quote evidence.
+7. **invoice arithmetic policy** — transparent line/summary rounding and reconciliation, separate from legal rate/treatment classification.
 
 This separation is intentional: failure of one exemption must never silently become a VAT-rate decision.

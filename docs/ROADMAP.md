@@ -19,6 +19,9 @@
 - first deterministic 0% product classifications;
 - transaction treatment foundation (`taxable`, `exempt`, `reverse_charge`);
 - exact decimal VAT calculation from net or gross values;
+- supported Áfa tv. 80–80/A. § foreign-currency conversion-date and bank/MNB/EKB rate-source evaluation with fail-closed evidence guards;
+- exact foreign-currency-to-HUF arithmetic without binary floating point;
+- auditable per-line versus per-VAT-rate-summary invoice rounding and reconciliation under an explicit caller-selected policy;
 - periodic-settlement tax-point resolution under Áfa tv. 58. §;
 - domestic construction reverse-charge evaluator;
 - 2026 AAM annual 20,000,000 HUF threshold evaluator;
@@ -39,7 +42,9 @@
 - broaden authoritative classification mappings for 5% and 18% rates;
 - expand exemption coverage beyond the currently supported §85–86 subsets, including additional public-interest and specific-nature cases;
 - deepen reverse-charge coverage beyond the supported construction and §88-elected property-sale scenarios;
-- research and formalise invoice-level rounding/aggregation and currency rules;
+- add the §80 (5) unquoted-currency two-stage adapter and §81 import/customs exchange-rate path;
+- connect rate-source adapters to verifiable historical MNB/EKB/bank observations without weakening the evidence model;
+- add an explicit rounding-difference allocation strategy for invoice formats that require line/summary reconciliation;
 - expand response schemas/examples in the OpenAPI contract as business models stabilise;
 - expanded fixtures based on official NAV examples;
 - advance the verified-through window through reviewed regulatory refreshes without weakening fail-closed behavior.

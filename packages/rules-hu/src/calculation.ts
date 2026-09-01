@@ -89,6 +89,6 @@ export function calculateHungaryVat(input: VatCalculationInput) {
     sellerChargesVat: true,
     recipientAccountingRequired: false,
     rounding: 'half_up_at_requested_scale',
-    notice: 'This endpoint performs exact arithmetic at the caller-selected scale. Invoice-level aggregation and currency-conversion rules are outside this MVP endpoint.'
+    notice: 'This endpoint performs single-amount arithmetic at the caller-selected scale. Use the invoice aggregation and currency-to-HUF endpoints when those explicit policy/evidence boundaries are required.'
   };
 }

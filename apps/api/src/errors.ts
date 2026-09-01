@@ -5,6 +5,8 @@ export type ApiErrorCode =
   | 'unsupported_effective_date'
   | 'classification_failed'
   | 'calculation_failed'
+  | 'currency_conversion_failed'
+  | 'invoice_aggregation_failed'
   | 'tax_point_failed'
   | 'reverse_charge_evaluation_failed'
   | 'aam_threshold_evaluation_failed'

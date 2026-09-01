@@ -27,7 +27,7 @@ Primary ViDA legal acts:
 
 ## Hungary VAT API — Phase 1 MVP
 
-The current Hungary ruleset is `HU-VAT-2026-006`, verified through **2026-09-01**.
+The current Hungary ruleset is `HU-VAT-2026-007`, verified through **2026-09-01**.
 
 Implemented foundations:
 
@@ -46,6 +46,9 @@ Implemented foundations:
 - property-rental exemption evaluator covering Áfa tv. 86. § (1) l), the 86. § (2) statutory exceptions and confirmed 88. § taxation elections;
 - property-sale evaluator covering old/new built property, the exact two-year tests, qualifying purpose/unit-count changes, building plots and confirmed 88. § taxation elections;
 - exact decimal VAT arithmetic from net or gross values;
+- Áfa tv. 80–80/A. § foreign-currency-to-HUF conversion-date and rate-source evaluator for supported bank, MNB and EKB paths;
+- explicit MNB/EKB declaration, full-scope, lock-in and mutual-exclusivity evidence guards;
+- auditable invoice arithmetic that computes both per-line and per-VAT-rate-summary rounding, reports their difference and applies an explicit caller-selected policy;
 - taxable, exempt and reverse-charge computational treatments;
 - Áfa tv. 58. § periodic-settlement tax-point resolver;
 - domestic construction reverse-charge evaluator;
@@ -123,6 +126,8 @@ Current business endpoints:
 - `GET /v1/hu/vat/rates?effectiveDate=2026-09-01`
 - `POST /v1/hu/vat/classify-rate`
 - `POST /v1/hu/vat/calculate`
+- `POST /v1/hu/vat/currency/convert-to-huf`
+- `POST /v1/hu/vat/invoices/aggregate`
 - `POST /v1/hu/vat/tax-point/periodic`
 - `POST /v1/hu/vat/reverse-charge/domestic-construction`
 - `POST /v1/hu/vat/reverse-charge/property-sale`
@@ -150,4 +155,4 @@ The software is infrastructure and does not replace professional tax or legal ad
 
 **Phase 1 — Hungary VAT API MVP in active development.**
 
-The deterministic core, AAM §188–189 foundation, first activity/property exemptions, property-sale treatment and reverse-charge paths, API contract and regulatory monitoring are functional. Remaining Phase 1 work focuses on broader 5%/18% mappings, additional exemption and reverse-charge cases, official-example fixtures, and invoice-level rounding/currency rules.
+The deterministic core, AAM §188–189 foundation, first activity/property exemptions, property-sale treatment and reverse-charge paths, supported §80–80/A currency conversion, auditable invoice arithmetic, API contract and regulatory monitoring are functional. Remaining Phase 1 work focuses on broader 5%/18% mappings, additional exemption and reverse-charge cases, official-example fixtures, and production reporting adapters.

@@ -3,8 +3,10 @@ import fastifySwagger from '@fastify/swagger';
 import fastifySwaggerUi from '@fastify/swagger-ui';
 import { z } from 'zod';
 import {
+  aggregateHungaryVatInvoice,
   calculateHungaryVat,
   classifyHungaryVatRate,
+  convertHungaryVatAmountToHuf,
   evaluateAamThreshold2026,
   evaluateActivityExemption,
   evaluateDomesticConstructionReverseCharge,
@@ -18,6 +20,8 @@ import { sendApiError } from './errors.js';
 import { OPENAPI_DOCUMENT } from './openapi.js';
 
 const isoDate = z.iso.date();
+const signedDecimal = z.string().regex(/^-?\d+(\.\d+)?$/);
+const nonNegativeDecimal = z.string().regex(/^\d+(\.\d+)?$/);
 const regulatedActivityGuards = {
   permitRequired: z.boolean(),
   permitHeld: z.boolean(),
@@ -51,6 +55,37 @@ const propertySaleSchema = z.discriminatedUnion('propertyKind', [
     ...propertySaleElectionFields
   })
 ]);
+const currencyTransactionSchema = z.discriminatedUnion('kind', [
+  z.object({ kind: z.literal('intra_community_acquisition'), taxLiabilityDeterminationDate: isoDate }),
+  z.object({ kind: z.literal('advance_payment'), taxLiabilityDeterminationDate: isoDate }),
+  z.object({ kind: z.literal('section_60'), taxLiabilityDeterminationDate: isoDate }),
+  z.object({ kind: z.literal('periodic_settlement_section_58'), invoiceIssueDate: isoDate }),
+  z.object({ kind: z.literal('other'), performanceDate: isoDate })
+]);
+const officialRateElectionFields = {
+  electionDeclaredToNavBeforeUse: z.boolean(),
+  electionAppliesToAllForeignCurrencyTransactions: z.boolean(),
+  electionLockInObserved: z.boolean(),
+  exclusiveMnbOrEcbChoiceConfirmed: z.boolean()
+} as const;
+const directRateFields = {
+  quotedCurrencyUnits: nonNegativeDecimal,
+  hufAmount: nonNegativeDecimal,
+  ratePublicationDate: isoDate,
+  latestValidRateConfirmed: z.boolean()
+} as const;
+const currencyRateSchema = z.discriminatedUnion('source', [
+  z.object({
+    source: z.literal('domestic_credit_institution_sell'), ...directRateFields,
+    institutionAuthorisedForDomesticCurrencyExchange: z.boolean()
+  }),
+  z.object({ source: z.literal('mnb'), ...directRateFields, ...officialRateElectionFields }),
+  z.object({
+    source: z.literal('ecb'), hufUnitsPerEur: nonNegativeDecimal, foreignCurrencyUnitsPerEur: nonNegativeDecimal.optional(),
+    ratePublicationDate: isoDate, latestValidRateConfirmed: z.boolean(), ...officialRateElectionFields
+  }),
+  z.object({ source: z.literal('unquoted_currency_section_80_5'), precedingQuarterEuroReferenceConfirmed: z.boolean() })
+]);
 
 export function buildServer() {
   const app = Fastify({ logger: true });
@@ -65,7 +100,7 @@ export function buildServer() {
     staticCSP: true
   });
 
-  app.get('/health', async () => ({ status: 'ok', service: 'vida-vat-platform', version: '0.6.0' }));
+  app.get('/health', async () => ({ status: 'ok', service: 'vida-vat-platform', version: '0.7.0' }));
   app.get('/openapi.json', async () => OPENAPI_DOCUMENT);
 
   app.get('/v1/hu/vat/rates', async (request, reply) => {
@@ -107,6 +142,30 @@ export function buildServer() {
     if (!parsed.success) return sendApiError(request, reply, 400, 'invalid_request', 'Request validation failed', parsed.error.issues);
     try { return calculateHungaryVat(parsed.data); }
     catch (error) { return sendApiError(request, reply, 422, 'calculation_failed', error instanceof Error ? error.message : 'Calculation failed'); }
+  });
+
+  app.post('/v1/hu/vat/currency/convert-to-huf', async (request, reply) => {
+    const parsed = z.object({
+      currency: z.string().regex(/^[A-Z]{3}$/), amount: nonNegativeDecimal, outputScale: z.number().int().min(0).max(6).optional(),
+      transaction: currencyTransactionSchema, rate: currencyRateSchema
+    }).safeParse(request.body);
+    if (!parsed.success) return sendApiError(request, reply, 400, 'invalid_request', 'Request validation failed', parsed.error.issues);
+    try { return convertHungaryVatAmountToHuf(parsed.data); }
+    catch (error) { return sendApiError(request, reply, 422, 'currency_conversion_failed', error instanceof Error ? error.message : 'Currency conversion failed'); }
+  });
+
+  app.post('/v1/hu/vat/invoices/aggregate', async (request, reply) => {
+    const parsed = z.object({
+      effectiveDate: isoDate, currency: z.string().regex(/^[A-Z]{3}$/), scale: z.number().int().min(0).max(6).optional(),
+      roundingPolicy: z.enum(['per_line', 'per_vat_rate_summary']),
+      lines: z.array(z.object({
+        lineId: z.string().min(1).max(100), netAmount: signedDecimal, treatment: z.enum(['taxable', 'exempt', 'reverse_charge']),
+        rate: z.union([z.literal(0), z.literal(5), z.literal(18), z.literal(27)]).optional()
+      })).min(1).max(500)
+    }).safeParse(request.body);
+    if (!parsed.success) return sendApiError(request, reply, 400, 'invalid_request', 'Request validation failed', parsed.error.issues);
+    try { return aggregateHungaryVatInvoice(parsed.data); }
+    catch (error) { return sendApiError(request, reply, 422, 'invoice_aggregation_failed', error instanceof Error ? error.message : 'Invoice aggregation failed'); }
   });
 
   app.post('/v1/hu/vat/tax-point/periodic', async (request, reply) => {

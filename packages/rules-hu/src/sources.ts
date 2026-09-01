@@ -42,6 +42,13 @@ export const HUNGARY_VAT_SOURCES: RegulatorySource[] = [
     url: 'https://nav.gov.hu/pfile/file?path=%2Fado%2Fafa%2FTajekoztato_-_Idoszakos_elszamolasu_ugyletekre_vonatkozo_szabalyozas_valtozasa'
   },
   {
+    id: 'NAV-INVOICE-RULES-2026',
+    authority: 'Nemzeti Adó- és Vámhivatal',
+    title: 'A számla, nyugta kibocsátásának alapvető szabályai 2026',
+    url: 'https://nav.gov.hu/pfile/file?path=/ugyfeliranytu/nezzen-utana/inf_fuz/2026/18.-A-szamla-nyugta-kibocsatasanak-alapveto-szabalyai-2026.-03.-02.',
+    publishedAt: '2026-03-02'
+  },
+  {
     id: 'NAV-REVERSE-CONSTRUCTION-2026',
     authority: 'Nemzeti Adó- és Vámhivatal',
     title: '2026/4. Adózási kérdés - Hatósági engedélyhez és bejelentéshez kötöttség a belföldi fordított adózásnál',

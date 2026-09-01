@@ -7,7 +7,9 @@ export type ApiErrorCode =
   | 'calculation_failed'
   | 'tax_point_failed'
   | 'reverse_charge_evaluation_failed'
-  | 'aam_threshold_evaluation_failed';
+  | 'aam_threshold_evaluation_failed'
+  | 'activity_exemption_evaluation_failed'
+  | 'property_rental_exemption_evaluation_failed';
 
 export function sendApiError(
   request: FastifyRequest,

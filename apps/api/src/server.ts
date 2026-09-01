@@ -6,7 +6,9 @@ import {
   calculateHungaryVat,
   classifyHungaryVatRate,
   evaluateAamThreshold2026,
+  evaluateActivityExemption,
   evaluateDomesticConstructionReverseCharge,
+  evaluatePropertyRentalExemption,
   getHungaryVatRates,
   resolvePeriodicTaxPoint
 } from '@vida/rules-hu';
@@ -14,6 +16,12 @@ import { sendApiError } from './errors.js';
 import { OPENAPI_DOCUMENT } from './openapi.js';
 
 const isoDate = z.iso.date();
+const regulatedActivityGuards = {
+  permitRequired: z.boolean(),
+  permitHeld: z.boolean(),
+  qualificationRequired: z.boolean(),
+  qualifiedPersonAvailable: z.boolean()
+} as const;
 
 export function buildServer() {
   const app = Fastify({ logger: true });
@@ -28,7 +36,7 @@ export function buildServer() {
     staticCSP: true
   });
 
-  app.get('/health', async () => ({ status: 'ok', service: 'vida-vat-platform', version: '0.4.0' }));
+  app.get('/health', async () => ({ status: 'ok', service: 'vida-vat-platform', version: '0.5.0' }));
   app.get('/openapi.json', async () => OPENAPI_DOCUMENT);
 
   app.get('/v1/hu/vat/rates', async (request, reply) => {
@@ -101,6 +109,41 @@ export function buildServer() {
     if (!parsed.success) return sendApiError(request, reply, 400, 'invalid_request', 'Request validation failed', parsed.error.issues);
     try { return evaluateAamThreshold2026(parsed.data); }
     catch (error) { return sendApiError(request, reply, 422, 'aam_threshold_evaluation_failed', error instanceof Error ? error.message : 'AAM threshold evaluation failed'); }
+  });
+
+  app.post('/v1/hu/vat/exemptions/activity', async (request, reply) => {
+    const parsed = z.discriminatedUnion('kind', [
+      z.object({ effectiveDate: isoDate, kind: z.literal('human_healthcare'), serviceIsHumanHealthcare: z.boolean(), providerActsInHealthcareCapacity: z.boolean(), ...regulatedActivityGuards }),
+      z.object({ effectiveDate: isoDate, kind: z.literal('dental'), supply: z.enum(['dental_service', 'dental_prosthesis']), providerActsInDentalCapacity: z.boolean(), ...regulatedActivityGuards }),
+      z.object({
+        effectiveDate: isoDate, kind: z.literal('education'),
+        context: z.enum(['public_education', 'vocational_training', 'higher_education', 'adult_training', 'language_training', 'recognized_language_exam', 'study_competition', 'other']),
+        providerActsInTeachingCapacity: z.boolean(), ...regulatedActivityGuards
+      }),
+      z.object({ effectiveDate: isoDate, kind: z.literal('insurance'), service: z.enum(['insurance', 'reinsurance', 'brokerage', 'intermediation']), actingInRelevantCapacity: z.boolean() }),
+      z.object({ effectiveDate: isoDate, kind: z.literal('credit'), service: z.enum(['credit_provision', 'credit_intermediation', 'creditor_management']), actingInRelevantCapacity: z.boolean() }),
+      z.object({
+        effectiveDate: isoDate, kind: z.literal('payment_financial'),
+        service: z.enum(['current_account', 'deposit_account', 'customer_account', 'payment', 'transfer', 'cheque', 'receivable', 'financial_instrument', 'intermediation']),
+        actingInRelevantCapacity: z.boolean(), debtCollection: z.boolean(), portfolioManagement: z.boolean()
+      })
+    ]).safeParse(request.body);
+    if (!parsed.success) return sendApiError(request, reply, 400, 'invalid_request', 'Request validation failed', parsed.error.issues);
+    try { return evaluateActivityExemption(parsed.data); }
+    catch (error) { return sendApiError(request, reply, 422, 'activity_exemption_evaluation_failed', error instanceof Error ? error.message : 'Activity exemption evaluation failed'); }
+  });
+
+  app.post('/v1/hu/vat/exemptions/property-rental', async (request, reply) => {
+    const parsed = z.object({
+      effectiveDate: isoDate,
+      rentalKind: z.enum(['ordinary', 'commercial_accommodation', 'vehicle_parking', 'permanently_attached_equipment', 'safe']),
+      propertyResidential: z.boolean(),
+      taxableElectionScope: z.enum(['none', 'all_property_rentals', 'non_residential_only']),
+      taxableElectionDeclaredAndEffective: z.boolean()
+    }).safeParse(request.body);
+    if (!parsed.success) return sendApiError(request, reply, 400, 'invalid_request', 'Request validation failed', parsed.error.issues);
+    try { return evaluatePropertyRentalExemption(parsed.data); }
+    catch (error) { return sendApiError(request, reply, 422, 'property_rental_exemption_evaluation_failed', error instanceof Error ? error.message : 'Property rental exemption evaluation failed'); }
   });
 
   return app;

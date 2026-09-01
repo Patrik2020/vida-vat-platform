@@ -67,7 +67,13 @@ describe('Hungary VAT Phase 1 rules', () => {
 
   it('resolves periodic tax points under the 58 § rules', () => {
     expect(resolvePeriodicTaxPoint({ periodEnd: '2026-08-31', invoiceDate: '2026-08-20', dueDate: '2026-08-25' }).taxPoint).toBe('2026-08-20');
-    expect(resolvePeriodicTaxPoint({ periodEnd: '2026-07-31', invoiceDate: '2026-07-31', dueDate: '2026-11-01' }).taxPoint).toBe('2026-09-29');
+    expect(resolvePeriodicTaxPoint({ periodEnd: '2026-06-30', invoiceDate: '2026-06-30', dueDate: '2026-11-01' }).taxPoint).toBe('2026-08-29');
+  });
+
+  it('fails closed if a computed periodic tax point falls after the verified window', () => {
+    expect(() => resolvePeriodicTaxPoint({
+      periodEnd: '2026-07-31', invoiceDate: '2026-07-31', dueDate: '2026-11-01'
+    })).toThrow(/verified only through/);
   });
 
   it('evaluates the supported construction reverse-charge facts', () => {

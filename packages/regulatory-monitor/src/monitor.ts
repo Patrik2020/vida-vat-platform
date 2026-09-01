@@ -1,9 +1,14 @@
+import { execFile as execFileCallback } from 'node:child_process';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
+import { promisify } from 'node:util';
 import { buildDiffExcerpt } from './diff.js';
 import { buildChangeIssueBody, buildSourceErrorIssueBody, ensureChangeIssue, ensureSourceErrorIssue } from './github.js';
 import { normalizeRegulatoryContent, sha256 } from './normalize.js';
 import type { MonitorRunReport, MonitorSourceResult, RegulatorySource, SourceObservation } from './types.js';
+
+const execFile = promisify(execFileCallback);
+const USER_AGENT = 'ViDA-Regulatory-Monitor/0.1 (+https://github.com/Patrik2020/vida-vat-platform)';
 
 type MonitorOptions = {
   stateDir: string;
@@ -15,6 +20,7 @@ type MonitorOptions = {
 };
 
 type PreviousState = { observation: SourceObservation; content: string };
+type FetchedDocument = { body: string; contentType: string; finalUrl: string; status: number };
 
 function statePaths(stateDir: string, sourceId: string) {
   const directory = join(stateDir, sourceId);
@@ -53,32 +59,86 @@ function validateContent(source: RegulatorySource, normalized: string): void {
   }
 }
 
+function requestHeaders(source: RegulatorySource): Record<string, string> {
+  return {
+    Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,text/plain;q=0.8,*/*;q=0.5',
+    'Accept-Language': source.jurisdiction === 'HU' ? 'hu-HU,hu;q=0.9,en;q=0.7' : 'en,en-US;q=0.9',
+    'User-Agent': USER_AGENT
+  };
+}
+
+async function fetchWithNative(source: RegulatorySource, client: typeof fetch): Promise<FetchedDocument> {
+  const response = await client(source.url, {
+    redirect: 'follow',
+    signal: AbortSignal.timeout(25_000),
+    headers: requestHeaders(source)
+  });
+  if (!response.ok) throw new Error(`HTTP ${response.status} ${response.statusText}`);
+  return {
+    body: await response.text(),
+    contentType: response.headers.get('content-type') ?? '',
+    finalUrl: response.url || source.url,
+    status: response.status
+  };
+}
+
+async function fetchWithCurl(source: RegulatorySource): Promise<FetchedDocument> {
+  const marker = '__VIDA_CURL_META__';
+  const headers = requestHeaders(source);
+  const { stdout } = await execFile('curl', [
+    '--ipv4', '--fail', '--location', '--silent', '--show-error', '--max-time', '25',
+    '--user-agent', USER_AGENT,
+    '--header', `Accept: ${headers.Accept}`,
+    '--header', `Accept-Language: ${headers['Accept-Language']}`,
+    '--write-out', `\n${marker}%{http_code}\t%{content_type}\t%{url_effective}`,
+    source.url
+  ], { encoding: 'utf8', maxBuffer: 20 * 1024 * 1024 });
+
+  const markerIndex = stdout.lastIndexOf(`\n${marker}`);
+  if (markerIndex < 0) throw new Error('curl fallback did not return response metadata');
+  const body = stdout.slice(0, markerIndex);
+  const metadata = stdout.slice(markerIndex + marker.length + 1).trim().split('\t');
+  const status = Number(metadata[0]);
+  if (!Number.isInteger(status) || status < 200 || status >= 300) throw new Error(`curl fallback returned HTTP ${metadata[0] ?? 'unknown'}`);
+  return {
+    body,
+    contentType: metadata[1] ?? 'text/html',
+    finalUrl: metadata[2] || source.url,
+    status
+  };
+}
+
+async function fetchDocument(source: RegulatorySource, fetchImpl?: typeof fetch): Promise<FetchedDocument> {
+  if (fetchImpl) return fetchWithNative(source, fetchImpl);
+  try {
+    return await fetchWithNative(source, fetch);
+  } catch (nativeError) {
+    try {
+      return await fetchWithCurl(source);
+    } catch (curlError) {
+      const nativeMessage = nativeError instanceof Error ? nativeError.message : String(nativeError);
+      const curlMessage = curlError instanceof Error ? curlError.message : String(curlError);
+      throw new Error(`native fetch failed: ${nativeMessage}; curl/IPv4 fallback failed: ${curlMessage}`);
+    }
+  }
+}
+
 export async function fetchObservation(
   source: RegulatorySource,
   fetchedAt: string,
-  fetchImpl: typeof fetch = fetch
+  fetchImpl?: typeof fetch
 ): Promise<{ observation: SourceObservation; content: string }> {
-  const response = await fetchImpl(source.url, {
-    redirect: 'follow',
-    signal: AbortSignal.timeout(25_000),
-    headers: {
-      Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,text/plain;q=0.8,*/*;q=0.5',
-      'Accept-Language': source.jurisdiction === 'HU' ? 'hu-HU,hu;q=0.9,en;q=0.7' : 'en,en-US;q=0.9',
-      'User-Agent': 'ViDA-Regulatory-Monitor/0.1 (+https://github.com/Patrik2020/vida-vat-platform)'
-    }
-  });
-  if (!response.ok) throw new Error(`HTTP ${response.status} ${response.statusText}`);
-  const contentType = response.headers.get('content-type') ?? '';
-  const normalized = normalizeRegulatoryContent(await response.text(), contentType);
+  const document = await fetchDocument(source, fetchImpl);
+  const normalized = normalizeRegulatoryContent(document.body, document.contentType);
   validateContent(source, normalized);
   return {
     content: normalized,
     observation: {
       sourceId: source.id,
       fetchedAt,
-      finalUrl: response.url || source.url,
-      httpStatus: response.status,
-      contentType,
+      finalUrl: document.finalUrl,
+      httpStatus: document.status,
+      contentType: document.contentType,
       sha256: sha256(normalized),
       normalizedCharacters: normalized.length
     }
@@ -115,7 +175,7 @@ export async function runRegulatoryMonitor(options: MonitorOptions): Promise<Mon
   for (const source of options.sources) {
     const previous = await readPreviousState(options.stateDir, source.id);
     try {
-      const current = await fetchObservation(source, checkedAt, options.fetchImpl ?? fetch);
+      const current = await fetchObservation(source, checkedAt, options.fetchImpl);
       if (!previous) {
         await writeState(options.stateDir, current.observation, current.content);
         results.push({ sourceId: source.id, status: 'bootstrap', previousSha256: null, currentSha256: current.observation.sha256, issueCreated: false, message: 'Initial observation recorded without opening a change issue.' });

@@ -1,10 +1,10 @@
 {
-  "checkedAt": "2026-09-01T04:59:01.282Z",
+  "checkedAt": "2026-09-01T05:01:49.669Z",
   "repository": "Patrik2020/vida-vat-platform",
   "totals": {
     "sources": 7,
-    "bootstrap": 6,
-    "unchanged": 0,
+    "bootstrap": 0,
+    "unchanged": 6,
     "changed": 0,
     "errors": 1
   },
@@ -14,56 +14,56 @@
       "status": "error",
       "previousSha256": null,
       "currentSha256": null,
-      "issueCreated": true,
-      "message": "fetch failed"
+      "issueCreated": false,
+      "message": "native fetch failed: fetch failed; curl/IPv4 fallback failed: Command failed: curl --ipv4 --fail --location --silent --show-error --max-time 25 --user-agent ViDA-Regulatory-Monitor/0.1 (+https://github.com/Patrik2020/vida-vat-platform) --header Accept: text/html,application/xhtml+xml,application/xml;q=0.9,text/plain;q=0.8,*/*;q=0.5 --header Accept-Language: hu-HU,hu;q=0.9,en;q=0.7 --write-out \n__VIDA_CURL_META__%{http_code}\t%{content_type}\t%{url_effective} https://njt.hu/jogszabaly/2007-127-00-00\ncurl: (56) Recv failure: Connection reset by peer\n"
     },
     {
       "sourceId": "HU-NAV-VAT-INDEX",
-      "status": "bootstrap",
-      "previousSha256": null,
+      "status": "unchanged",
+      "previousSha256": "d4fc5897125b3fa7328608b2c3475b16166663ed836b5739461002b5958db0ee",
       "currentSha256": "d4fc5897125b3fa7328608b2c3475b16166663ed836b5739461002b5958db0ee",
       "issueCreated": false,
-      "message": "Initial observation recorded without opening a change issue."
+      "message": "No normalized content change detected."
     },
     {
       "sourceId": "HU-NAV-INFO-2026",
-      "status": "bootstrap",
-      "previousSha256": null,
+      "status": "unchanged",
+      "previousSha256": "5cb9d3cf01811a59caba6de1e8465193f821dafac62645b7ab543e3452fd5a71",
       "currentSha256": "5cb9d3cf01811a59caba6de1e8465193f821dafac62645b7ab543e3452fd5a71",
       "issueCreated": false,
-      "message": "Initial observation recorded without opening a change issue."
+      "message": "No normalized content change detected."
     },
     {
       "sourceId": "EU-VIDA-OVERVIEW",
-      "status": "bootstrap",
-      "previousSha256": null,
+      "status": "unchanged",
+      "previousSha256": "1753319fd13f6d1dc24cb8ce80aab770d4be7bb7f4cdd426cce75c06f942889f",
       "currentSha256": "1753319fd13f6d1dc24cb8ce80aab770d4be7bb7f4cdd426cce75c06f942889f",
       "issueCreated": false,
-      "message": "Initial observation recorded without opening a change issue."
+      "message": "No normalized content change detected."
     },
     {
       "sourceId": "EU-VIDA-DIR-2025-516",
-      "status": "bootstrap",
-      "previousSha256": null,
+      "status": "unchanged",
+      "previousSha256": "d6634283ed06df6befe9574dce011c9909c66d3f77c37df75557ad12266d0ca5",
       "currentSha256": "d6634283ed06df6befe9574dce011c9909c66d3f77c37df75557ad12266d0ca5",
       "issueCreated": false,
-      "message": "Initial observation recorded without opening a change issue."
+      "message": "No normalized content change detected."
     },
     {
       "sourceId": "EU-VIDA-REG-2025-517",
-      "status": "bootstrap",
-      "previousSha256": null,
+      "status": "unchanged",
+      "previousSha256": "51e17e9281fcdbe973f63dc5896754b46c862f891eddda2215aa82670f205304",
       "currentSha256": "51e17e9281fcdbe973f63dc5896754b46c862f891eddda2215aa82670f205304",
       "issueCreated": false,
-      "message": "Initial observation recorded without opening a change issue."
+      "message": "No normalized content change detected."
     },
     {
       "sourceId": "EU-VIDA-IMPL-2025-518",
-      "status": "bootstrap",
-      "previousSha256": null,
+      "status": "unchanged",
+      "previousSha256": "6497aba8bd4c491ded4b2171f424d3ddec3d60ca8be6f9906c8616284b4df6a5",
       "currentSha256": "6497aba8bd4c491ded4b2171f424d3ddec3d60ca8be6f9906c8616284b4df6a5",
       "issueCreated": false,
-      "message": "Initial observation recorded without opening a change issue."
+      "message": "No normalized content change detected."
     }
   ]
 }

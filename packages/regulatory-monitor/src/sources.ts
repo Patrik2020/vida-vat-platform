@@ -6,7 +6,7 @@ export const REGULATORY_SOURCES: readonly RegulatorySource[] = [
     jurisdiction: 'HU',
     authority: 'Nemzeti Jogszabálytár',
     title: '2007. évi CXXVII. törvény az általános forgalmi adóról',
-    url: 'https://njt.hu/jogszabaly/2007-127-00-00',
+    url: 'https://njt.jog.gov.hu/eli/TV/2007/127/hu/html',
     kind: 'legislation',
     impactAreas: ['hu-vat-core', 'rates', 'exemptions', 'reverse-charge', 'tax-point', 'invoicing'],
     mustContain: ['2007. évi CXXVII. törvény', 'általános forgalmi adó'],

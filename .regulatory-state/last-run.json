@@ -1,29 +1,29 @@
 {
-  "checkedAt": "2026-09-01T05:05:05.543Z",
+  "checkedAt": "2026-09-02T07:54:40.665Z",
   "repository": "Patrik2020/vida-vat-platform",
   "totals": {
     "sources": 7,
-    "bootstrap": 1,
-    "unchanged": 6,
-    "changed": 0,
-    "errors": 0
+    "bootstrap": 0,
+    "unchanged": 3,
+    "changed": 1,
+    "errors": 3
   },
   "results": [
     {
       "sourceId": "HU-AFA-ACT",
-      "status": "bootstrap",
-      "previousSha256": null,
+      "status": "unchanged",
+      "previousSha256": "6141b0e6e99527ac7ce27a9dda402d962bffdb4fcc930b67fdde6bbbac9c5e7c",
       "currentSha256": "6141b0e6e99527ac7ce27a9dda402d962bffdb4fcc930b67fdde6bbbac9c5e7c",
       "issueCreated": false,
-      "message": "Initial observation recorded without opening a change issue."
+      "message": "No normalized content change detected."
     },
     {
       "sourceId": "HU-NAV-VAT-INDEX",
-      "status": "unchanged",
+      "status": "changed",
       "previousSha256": "d4fc5897125b3fa7328608b2c3475b16166663ed836b5739461002b5958db0ee",
-      "currentSha256": "d4fc5897125b3fa7328608b2c3475b16166663ed836b5739461002b5958db0ee",
-      "issueCreated": false,
-      "message": "No normalized content change detected."
+      "currentSha256": "f0daa49ff4d3cdb5159fa45345725fced8f0a211d672303112f768e47ce20bbf",
+      "issueCreated": true,
+      "message": "Change recorded; production rules were not modified."
     },
     {
       "sourceId": "HU-NAV-INFO-2026",
@@ -43,27 +43,27 @@
     },
     {
       "sourceId": "EU-VIDA-DIR-2025-516",
-      "status": "unchanged",
+      "status": "error",
       "previousSha256": "d6634283ed06df6befe9574dce011c9909c66d3f77c37df75557ad12266d0ca5",
-      "currentSha256": "d6634283ed06df6befe9574dce011c9909c66d3f77c37df75557ad12266d0ca5",
-      "issueCreated": false,
-      "message": "No normalized content change detected."
+      "currentSha256": null,
+      "issueCreated": true,
+      "message": "Normalized content is unexpectedly short (0 chars; expected at least 5000)."
     },
     {
       "sourceId": "EU-VIDA-REG-2025-517",
-      "status": "unchanged",
+      "status": "error",
       "previousSha256": "51e17e9281fcdbe973f63dc5896754b46c862f891eddda2215aa82670f205304",
-      "currentSha256": "51e17e9281fcdbe973f63dc5896754b46c862f891eddda2215aa82670f205304",
-      "issueCreated": false,
-      "message": "No normalized content change detected."
+      "currentSha256": null,
+      "issueCreated": true,
+      "message": "Normalized content is unexpectedly short (0 chars; expected at least 3000)."
     },
     {
       "sourceId": "EU-VIDA-IMPL-2025-518",
-      "status": "unchanged",
+      "status": "error",
       "previousSha256": "6497aba8bd4c491ded4b2171f424d3ddec3d60ca8be6f9906c8616284b4df6a5",
-      "currentSha256": "6497aba8bd4c491ded4b2171f424d3ddec3d60ca8be6f9906c8616284b4df6a5",
-      "issueCreated": false,
-      "message": "No normalized content change detected."
+      "currentSha256": null,
+      "issueCreated": true,
+      "message": "Normalized content is unexpectedly short (0 chars; expected at least 3000)."
     }
   ]
 }

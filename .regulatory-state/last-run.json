@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-09-02T07:54:40.665Z",
+  "checkedAt": "2026-09-03T08:02:53.544Z",
   "repository": "Patrik2020/vida-vat-platform",
   "totals": {
     "sources": 7,
@@ -20,8 +20,8 @@
     {
       "sourceId": "HU-NAV-VAT-INDEX",
       "status": "changed",
-      "previousSha256": "d4fc5897125b3fa7328608b2c3475b16166663ed836b5739461002b5958db0ee",
-      "currentSha256": "f0daa49ff4d3cdb5159fa45345725fced8f0a211d672303112f768e47ce20bbf",
+      "previousSha256": "f0daa49ff4d3cdb5159fa45345725fced8f0a211d672303112f768e47ce20bbf",
+      "currentSha256": "ad1d23e949fb14c6c91a4e290a547eb3e9e36a9466ec9595726037c5c9c48e78",
       "issueCreated": true,
       "message": "Change recorded; production rules were not modified."
     },
@@ -46,7 +46,7 @@
       "status": "error",
       "previousSha256": "d6634283ed06df6befe9574dce011c9909c66d3f77c37df75557ad12266d0ca5",
       "currentSha256": null,
-      "issueCreated": true,
+      "issueCreated": false,
       "message": "Normalized content is unexpectedly short (0 chars; expected at least 5000)."
     },
     {
@@ -54,7 +54,7 @@
       "status": "error",
       "previousSha256": "51e17e9281fcdbe973f63dc5896754b46c862f891eddda2215aa82670f205304",
       "currentSha256": null,
-      "issueCreated": true,
+      "issueCreated": false,
       "message": "Normalized content is unexpectedly short (0 chars; expected at least 3000)."
     },
     {
@@ -62,7 +62,7 @@
       "status": "error",
       "previousSha256": "6497aba8bd4c491ded4b2171f424d3ddec3d60ca8be6f9906c8616284b4df6a5",
       "currentSha256": null,
-      "issueCreated": true,
+      "issueCreated": false,
       "message": "Normalized content is unexpectedly short (0 chars; expected at least 3000)."
     }
   ]

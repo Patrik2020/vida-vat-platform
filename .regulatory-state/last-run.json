@@ -1,12 +1,12 @@
 {
-  "checkedAt": "2026-09-04T07:58:21.175Z",
+  "checkedAt": "2026-09-05T07:39:51.001Z",
   "repository": "Patrik2020/vida-vat-platform",
   "totals": {
     "sources": 7,
     "bootstrap": 0,
-    "unchanged": 4,
+    "unchanged": 5,
     "changed": 0,
-    "errors": 3
+    "errors": 2
   },
   "results": [
     {
@@ -19,19 +19,19 @@
     },
     {
       "sourceId": "HU-NAV-VAT-INDEX",
-      "status": "unchanged",
+      "status": "error",
       "previousSha256": "ad1d23e949fb14c6c91a4e290a547eb3e9e36a9466ec9595726037c5c9c48e78",
-      "currentSha256": "ad1d23e949fb14c6c91a4e290a547eb3e9e36a9466ec9595726037c5c9c48e78",
-      "issueCreated": false,
-      "message": "No normalized content change detected."
+      "currentSha256": null,
+      "issueCreated": true,
+      "message": "native fetch failed: fetch failed; curl/IPv4 fallback failed: Command failed: curl --ipv4 --fail --location --silent --show-error --max-time 25 --user-agent ViDA-Regulatory-Monitor/0.1 (+https://github.com/Patrik2020/vida-vat-platform) --header Accept: text/html,application/xhtml+xml,application/xml;q=0.9,text/plain;q=0.8,*/*;q=0.5 --header Accept-Language: hu-HU,hu;q=0.9,en;q=0.7 --write-out \n__VIDA_CURL_META__%{http_code}\t%{content_type}\t%{url_effective} https://nav.gov.hu/ado/afa\ncurl: (28) Connection timed out after 25002 milliseconds\n"
     },
     {
       "sourceId": "HU-NAV-INFO-2026",
-      "status": "unchanged",
+      "status": "error",
       "previousSha256": "5cb9d3cf01811a59caba6de1e8465193f821dafac62645b7ab543e3452fd5a71",
-      "currentSha256": "5cb9d3cf01811a59caba6de1e8465193f821dafac62645b7ab543e3452fd5a71",
-      "issueCreated": false,
-      "message": "No normalized content change detected."
+      "currentSha256": null,
+      "issueCreated": true,
+      "message": "native fetch failed: fetch failed; curl/IPv4 fallback failed: Command failed: curl --ipv4 --fail --location --silent --show-error --max-time 25 --user-agent ViDA-Regulatory-Monitor/0.1 (+https://github.com/Patrik2020/vida-vat-platform) --header Accept: text/html,application/xhtml+xml,application/xml;q=0.9,text/plain;q=0.8,*/*;q=0.5 --header Accept-Language: hu-HU,hu;q=0.9,en;q=0.7 --write-out \n__VIDA_CURL_META__%{http_code}\t%{content_type}\t%{url_effective} https://nav.gov.hu/ugyfeliranytu/nezzen-utana/inf_fuz/2026\ncurl: (28) Connection timed out after 25001 milliseconds\n"
     },
     {
       "sourceId": "EU-VIDA-OVERVIEW",
@@ -43,27 +43,27 @@
     },
     {
       "sourceId": "EU-VIDA-DIR-2025-516",
-      "status": "error",
+      "status": "unchanged",
       "previousSha256": "d6634283ed06df6befe9574dce011c9909c66d3f77c37df75557ad12266d0ca5",
-      "currentSha256": null,
+      "currentSha256": "d6634283ed06df6befe9574dce011c9909c66d3f77c37df75557ad12266d0ca5",
       "issueCreated": false,
-      "message": "Normalized content is unexpectedly short (0 chars; expected at least 5000)."
+      "message": "No normalized content change detected."
     },
     {
       "sourceId": "EU-VIDA-REG-2025-517",
-      "status": "error",
+      "status": "unchanged",
       "previousSha256": "51e17e9281fcdbe973f63dc5896754b46c862f891eddda2215aa82670f205304",
-      "currentSha256": null,
+      "currentSha256": "51e17e9281fcdbe973f63dc5896754b46c862f891eddda2215aa82670f205304",
       "issueCreated": false,
-      "message": "Normalized content is unexpectedly short (0 chars; expected at least 3000)."
+      "message": "No normalized content change detected."
     },
     {
       "sourceId": "EU-VIDA-IMPL-2025-518",
-      "status": "error",
+      "status": "unchanged",
       "previousSha256": "6497aba8bd4c491ded4b2171f424d3ddec3d60ca8be6f9906c8616284b4df6a5",
-      "currentSha256": null,
+      "currentSha256": "6497aba8bd4c491ded4b2171f424d3ddec3d60ca8be6f9906c8616284b4df6a5",
       "issueCreated": false,
-      "message": "Normalized content is unexpectedly short (0 chars; expected at least 3000)."
+      "message": "No normalized content change detected."
     }
   ]
 }

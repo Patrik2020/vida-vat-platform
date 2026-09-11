@@ -1,11 +1,11 @@
 {
-  "checkedAt": "2026-09-10T08:07:51.500Z",
+  "checkedAt": "2026-09-11T08:03:16.451Z",
   "repository": "Patrik2020/vida-vat-platform",
   "totals": {
     "sources": 7,
     "bootstrap": 0,
-    "unchanged": 4,
-    "changed": 0,
+    "unchanged": 3,
+    "changed": 1,
     "errors": 3
   },
   "results": [
@@ -35,11 +35,11 @@
     },
     {
       "sourceId": "EU-VIDA-OVERVIEW",
-      "status": "unchanged",
+      "status": "changed",
       "previousSha256": "1753319fd13f6d1dc24cb8ce80aab770d4be7bb7f4cdd426cce75c06f942889f",
-      "currentSha256": "1753319fd13f6d1dc24cb8ce80aab770d4be7bb7f4cdd426cce75c06f942889f",
-      "issueCreated": false,
-      "message": "No normalized content change detected."
+      "currentSha256": "cddfc999bc45a4a3c6196243eca66f9ee46b7f87f9e12ba788255850b3e4b037",
+      "issueCreated": true,
+      "message": "Change recorded; production rules were not modified."
     },
     {
       "sourceId": "EU-VIDA-DIR-2025-516",

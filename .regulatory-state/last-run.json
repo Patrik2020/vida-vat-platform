@@ -1,12 +1,12 @@
 {
-  "checkedAt": "2026-09-11T08:03:16.451Z",
+  "checkedAt": "2026-09-12T07:54:54.668Z",
   "repository": "Patrik2020/vida-vat-platform",
   "totals": {
     "sources": 7,
     "bootstrap": 0,
-    "unchanged": 3,
-    "changed": 1,
-    "errors": 3
+    "unchanged": 7,
+    "changed": 0,
+    "errors": 0
   },
   "results": [
     {
@@ -35,35 +35,35 @@
     },
     {
       "sourceId": "EU-VIDA-OVERVIEW",
-      "status": "changed",
-      "previousSha256": "1753319fd13f6d1dc24cb8ce80aab770d4be7bb7f4cdd426cce75c06f942889f",
+      "status": "unchanged",
+      "previousSha256": "cddfc999bc45a4a3c6196243eca66f9ee46b7f87f9e12ba788255850b3e4b037",
       "currentSha256": "cddfc999bc45a4a3c6196243eca66f9ee46b7f87f9e12ba788255850b3e4b037",
-      "issueCreated": true,
-      "message": "Change recorded; production rules were not modified."
+      "issueCreated": false,
+      "message": "No normalized content change detected."
     },
     {
       "sourceId": "EU-VIDA-DIR-2025-516",
-      "status": "error",
+      "status": "unchanged",
       "previousSha256": "d6634283ed06df6befe9574dce011c9909c66d3f77c37df75557ad12266d0ca5",
-      "currentSha256": null,
+      "currentSha256": "d6634283ed06df6befe9574dce011c9909c66d3f77c37df75557ad12266d0ca5",
       "issueCreated": false,
-      "message": "Normalized content is unexpectedly short (0 chars; expected at least 5000)."
+      "message": "No normalized content change detected."
     },
     {
       "sourceId": "EU-VIDA-REG-2025-517",
-      "status": "error",
+      "status": "unchanged",
       "previousSha256": "51e17e9281fcdbe973f63dc5896754b46c862f891eddda2215aa82670f205304",
-      "currentSha256": null,
+      "currentSha256": "51e17e9281fcdbe973f63dc5896754b46c862f891eddda2215aa82670f205304",
       "issueCreated": false,
-      "message": "Normalized content is unexpectedly short (0 chars; expected at least 3000)."
+      "message": "No normalized content change detected."
     },
     {
       "sourceId": "EU-VIDA-IMPL-2025-518",
-      "status": "error",
+      "status": "unchanged",
       "previousSha256": "6497aba8bd4c491ded4b2171f424d3ddec3d60ca8be6f9906c8616284b4df6a5",
-      "currentSha256": null,
+      "currentSha256": "6497aba8bd4c491ded4b2171f424d3ddec3d60ca8be6f9906c8616284b4df6a5",
       "issueCreated": false,
-      "message": "Normalized content is unexpectedly short (0 chars; expected at least 3000)."
+      "message": "No normalized content change detected."
     }
   ]
 }

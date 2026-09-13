@@ -1,12 +1,12 @@
 {
-  "checkedAt": "2026-09-12T07:54:54.668Z",
+  "checkedAt": "2026-09-13T08:18:12.590Z",
   "repository": "Patrik2020/vida-vat-platform",
   "totals": {
     "sources": 7,
     "bootstrap": 0,
-    "unchanged": 7,
+    "unchanged": 5,
     "changed": 0,
-    "errors": 0
+    "errors": 2
   },
   "results": [
     {
@@ -51,19 +51,19 @@
     },
     {
       "sourceId": "EU-VIDA-REG-2025-517",
-      "status": "unchanged",
+      "status": "error",
       "previousSha256": "51e17e9281fcdbe973f63dc5896754b46c862f891eddda2215aa82670f205304",
-      "currentSha256": "51e17e9281fcdbe973f63dc5896754b46c862f891eddda2215aa82670f205304",
+      "currentSha256": null,
       "issueCreated": false,
-      "message": "No normalized content change detected."
+      "message": "Normalized content is unexpectedly short (0 chars; expected at least 3000)."
     },
     {
       "sourceId": "EU-VIDA-IMPL-2025-518",
-      "status": "unchanged",
+      "status": "error",
       "previousSha256": "6497aba8bd4c491ded4b2171f424d3ddec3d60ca8be6f9906c8616284b4df6a5",
-      "currentSha256": "6497aba8bd4c491ded4b2171f424d3ddec3d60ca8be6f9906c8616284b4df6a5",
+      "currentSha256": null,
       "issueCreated": false,
-      "message": "No normalized content change detected."
+      "message": "Normalized content is unexpectedly short (0 chars; expected at least 3000)."
     }
   ]
 }

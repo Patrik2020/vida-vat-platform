@@ -1,12 +1,12 @@
 {
-  "checkedAt": "2026-09-13T08:18:12.590Z",
+  "checkedAt": "2026-09-14T08:54:45.849Z",
   "repository": "Patrik2020/vida-vat-platform",
   "totals": {
     "sources": 7,
     "bootstrap": 0,
-    "unchanged": 5,
+    "unchanged": 4,
     "changed": 0,
-    "errors": 2
+    "errors": 3
   },
   "results": [
     {
@@ -43,11 +43,11 @@
     },
     {
       "sourceId": "EU-VIDA-DIR-2025-516",
-      "status": "unchanged",
+      "status": "error",
       "previousSha256": "d6634283ed06df6befe9574dce011c9909c66d3f77c37df75557ad12266d0ca5",
-      "currentSha256": "d6634283ed06df6befe9574dce011c9909c66d3f77c37df75557ad12266d0ca5",
+      "currentSha256": null,
       "issueCreated": false,
-      "message": "No normalized content change detected."
+      "message": "Normalized content is unexpectedly short (0 chars; expected at least 5000)."
     },
     {
       "sourceId": "EU-VIDA-REG-2025-517",

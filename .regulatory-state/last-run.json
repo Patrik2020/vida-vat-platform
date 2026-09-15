@@ -1,29 +1,29 @@
 {
-  "checkedAt": "2026-09-14T08:54:45.849Z",
+  "checkedAt": "2026-09-15T08:40:37.382Z",
   "repository": "Patrik2020/vida-vat-platform",
   "totals": {
     "sources": 7,
     "bootstrap": 0,
-    "unchanged": 4,
-    "changed": 0,
+    "unchanged": 2,
+    "changed": 2,
     "errors": 3
   },
   "results": [
     {
       "sourceId": "HU-AFA-ACT",
-      "status": "unchanged",
+      "status": "changed",
       "previousSha256": "6141b0e6e99527ac7ce27a9dda402d962bffdb4fcc930b67fdde6bbbac9c5e7c",
-      "currentSha256": "6141b0e6e99527ac7ce27a9dda402d962bffdb4fcc930b67fdde6bbbac9c5e7c",
-      "issueCreated": false,
-      "message": "No normalized content change detected."
+      "currentSha256": "2d6754ef2e64b4dbea1aafb5f6be361a39c35e73d2cfe7e04339dfd6da1bc0c7",
+      "issueCreated": true,
+      "message": "Change recorded; production rules were not modified."
     },
     {
       "sourceId": "HU-NAV-VAT-INDEX",
-      "status": "unchanged",
+      "status": "changed",
       "previousSha256": "ad1d23e949fb14c6c91a4e290a547eb3e9e36a9466ec9595726037c5c9c48e78",
-      "currentSha256": "ad1d23e949fb14c6c91a4e290a547eb3e9e36a9466ec9595726037c5c9c48e78",
-      "issueCreated": false,
-      "message": "No normalized content change detected."
+      "currentSha256": "edb02a91b2469761c4cde119cee0247e4a0fc66b958862eed7b762f62df8cd35",
+      "issueCreated": true,
+      "message": "Change recorded; production rules were not modified."
     },
     {
       "sourceId": "HU-NAV-INFO-2026",

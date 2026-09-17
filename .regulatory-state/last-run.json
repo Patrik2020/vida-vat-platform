@@ -1,11 +1,11 @@
 {
-  "checkedAt": "2026-09-16T08:35:11.458Z",
+  "checkedAt": "2026-09-17T08:39:16.831Z",
   "repository": "Patrik2020/vida-vat-platform",
   "totals": {
     "sources": 7,
     "bootstrap": 0,
-    "unchanged": 3,
-    "changed": 1,
+    "unchanged": 4,
+    "changed": 0,
     "errors": 3
   },
   "results": [
@@ -19,11 +19,11 @@
     },
     {
       "sourceId": "HU-NAV-VAT-INDEX",
-      "status": "changed",
-      "previousSha256": "edb02a91b2469761c4cde119cee0247e4a0fc66b958862eed7b762f62df8cd35",
+      "status": "unchanged",
+      "previousSha256": "5e2632c88014eb97ff1cec419747316b63413bca0de4670d19d7d4074533a42b",
       "currentSha256": "5e2632c88014eb97ff1cec419747316b63413bca0de4670d19d7d4074533a42b",
-      "issueCreated": true,
-      "message": "Change recorded; production rules were not modified."
+      "issueCreated": false,
+      "message": "No normalized content change detected."
     },
     {
       "sourceId": "HU-NAV-INFO-2026",

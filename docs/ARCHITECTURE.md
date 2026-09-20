@@ -29,6 +29,7 @@ Future reporting/e-invoicing adapters
 - `packages/rules-hu` — Hungarian VAT ruleset and source metadata.
 - `packages/invoice-model` — versioned EN 16931:2026-based, syntax-neutral canonical invoice contract and invariant validation.
 - `packages/adapter-osa` — versioned, fail-closed OSA 3.0 XML input adapter with field-level mapping evidence.
+- `packages/validator-pint-eu` — PINT-EU Billing 1.1.1 / UBL 2.1 validation prototype with separately pinned syntax, Schematron and code-list versions.
 
 The Hungary package also contains two deliberately separate arithmetic boundaries:
 
@@ -47,6 +48,8 @@ Future packages should be added by capability, for example:
 - `packages/source-registry`
 
 The canonical invoice model is deliberately independent from transport syntaxes. OSA XML, PINT-EU/UBL and future HU-ViDA payloads belong in separately versioned adapters that transform into this model and record their version and source evidence in `provenance`. The OSA adapter implements the first such boundary and returns `manual_review` whenever reporting data is incomplete or lacks an EN 16931 semantic equivalent.
+
+The PINT-EU validator is a separate ingress gate rather than domain logic. Its first prototype executes a bounded, named subset of PINT-EU/EN 16931 rules and code-list deltas, records the exact artifact manifest and payload hash, and always reports full production conformance as `not_assessed`. Production acceptance must add execution of the pinned official UBL XSD and complete Schematron bundle; a prototype pass must never be promoted to a Peppol-conformance claim.
 
 ## Rule lifecycle
 

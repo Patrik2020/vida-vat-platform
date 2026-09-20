@@ -27,6 +27,7 @@ Future reporting/e-invoicing adapters
 
 - `apps/api` — Fastify HTTP boundary and validation.
 - `packages/rules-hu` — Hungarian VAT ruleset and source metadata.
+- `packages/invoice-model` — versioned EN 16931:2026-based, syntax-neutral canonical invoice contract and invariant validation.
 
 The Hungary package also contains two deliberately separate arithmetic boundaries:
 
@@ -41,9 +42,10 @@ Future packages should be added by capability, for example:
 - `packages/rules-eu`
 - `packages/rules-de`
 - `packages/rules-at`
-- `packages/invoice-model`
 - `packages/drr`
 - `packages/source-registry`
+
+The canonical invoice model is deliberately independent from transport syntaxes. OSA XML, PINT-EU/UBL and future HU-ViDA payloads belong in separately versioned adapters that transform into this model and record their version and source evidence in `provenance`.
 
 ## Rule lifecycle
 

@@ -31,6 +31,7 @@ The current Hungary ruleset is `HU-VAT-2026-007`, verified through **2026-09-01*
 
 Implemented foundations:
 
+- versioned EN 16931:2026-based canonical invoice model with syntax-neutral types, exact total validation and source-adapter provenance;
 - effective-date and fail-closed regulatory guardrails;
 - 0%, 5%, 18% and 27% Hungarian VAT rate catalogue;
 - source metadata linked to NJT/NAV material;
@@ -85,6 +86,7 @@ See `docs/REGULATORY_MONITOR.md` for the design and operating model.
 apps/
   api/                  Fastify HTTP API
 packages/
+  invoice-model/         versioned canonical invoice contract and validation
   rules-hu/             Hungary VAT rules and decision engine
   regulatory-monitor/   official-source change detection and review automation
 
@@ -153,6 +155,6 @@ The software is infrastructure and does not replace professional tax or legal ad
 
 ## Status
 
-**Phase 1 — Hungary VAT API MVP in active development.**
+**Phase 1 — Hungary VAT API MVP and the ViDA canonical invoice foundation are in active development.**
 
 The deterministic core, AAM §188–189 foundation, first activity/property exemptions, property-sale treatment and reverse-charge paths, supported §80–80/A currency conversion, auditable invoice arithmetic, API contract and regulatory monitoring are functional. Remaining Phase 1 work focuses on broader 5%/18% mappings, additional exemption and reverse-charge cases, official-example fixtures, and production reporting adapters.

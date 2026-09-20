@@ -69,11 +69,20 @@
 
 ## Phase 4 — ViDA implementation
 
-- structured e-invoice domain model;
+- structured e-invoice domain model — initial versioned EN 16931:2026 canonical model implemented;
 - Digital Reporting Requirements model;
 - cross-border B2B reporting workflows;
 - implementation adapters aligned with EU technical specifications as they stabilise;
 - 2030 readiness test suite.
+
+### Six-step e-invoicing implementation track
+
+1. **Canonical invoice model — in progress:** `@vida/invoice-model` now provides the first versioned semantic contract, exact total checks and transformation provenance. Full EN 16931 conformance rules remain a separate follow-up.
+2. **OSA adapter:** map current Hungarian Online Számla payloads into the canonical model with field-level traceability.
+3. **PINT-EU/UBL validation prototype:** keep syntax, Schematron and code-list versions outside the domain model.
+4. **Country CIUS/rule packs:** load versioned country and profile constraints without branching the canonical contract.
+5. **Lifecycle and audit:** persist invoice events, acknowledgements, validation evidence and rule versions.
+6. **HU-ViDA adapter:** wait for final Hungarian XSD, API and DRR specifications before production implementation.
 
 ## Phase 5 — Commercial platform
 

@@ -32,6 +32,7 @@ The current Hungary ruleset is `HU-VAT-2026-007`, verified through **2026-09-01*
 Implemented foundations:
 
 - versioned EN 16931:2026-based canonical invoice model with syntax-neutral types, exact total validation and source-adapter provenance;
+- versioned OSA 3.0 XML adapter for complete normal invoices, with field-level evidence and fail-closed manual-review outcomes;
 - effective-date and fail-closed regulatory guardrails;
 - 0%, 5%, 18% and 27% Hungarian VAT rate catalogue;
 - source metadata linked to NJT/NAV material;
@@ -86,6 +87,7 @@ See `docs/REGULATORY_MONITOR.md` for the design and operating model.
 apps/
   api/                  Fastify HTTP API
 packages/
+  adapter-osa/           NAV Online Számla 3.0 input adapter
   invoice-model/         versioned canonical invoice contract and validation
   rules-hu/             Hungary VAT rules and decision engine
   regulatory-monitor/   official-source change detection and review automation

@@ -28,6 +28,7 @@ Future reporting/e-invoicing adapters
 - `apps/api` — Fastify HTTP boundary and validation.
 - `packages/rules-hu` — Hungarian VAT ruleset and source metadata.
 - `packages/invoice-model` — versioned EN 16931:2026-based, syntax-neutral canonical invoice contract and invariant validation.
+- `packages/adapter-osa` — versioned, fail-closed OSA 3.0 XML input adapter with field-level mapping evidence.
 
 The Hungary package also contains two deliberately separate arithmetic boundaries:
 
@@ -45,7 +46,7 @@ Future packages should be added by capability, for example:
 - `packages/drr`
 - `packages/source-registry`
 
-The canonical invoice model is deliberately independent from transport syntaxes. OSA XML, PINT-EU/UBL and future HU-ViDA payloads belong in separately versioned adapters that transform into this model and record their version and source evidence in `provenance`.
+The canonical invoice model is deliberately independent from transport syntaxes. OSA XML, PINT-EU/UBL and future HU-ViDA payloads belong in separately versioned adapters that transform into this model and record their version and source evidence in `provenance`. The OSA adapter implements the first such boundary and returns `manual_review` whenever reporting data is incomplete or lacks an EN 16931 semantic equivalent.
 
 ## Rule lifecycle
 

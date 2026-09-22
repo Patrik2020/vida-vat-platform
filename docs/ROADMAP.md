@@ -79,7 +79,7 @@
 
 1. **Canonical invoice model — in progress:** `@vida/invoice-model` now provides the first versioned semantic contract, exact total checks and transformation provenance. Full EN 16931 conformance rules remain a separate follow-up.
 2. **OSA adapter — initial version implemented:** map the strictly supported OSA 3.0 normal-invoice subset into the canonical model with field-level traceability and fail-closed review outcomes. Broader invoice categories remain versioned follow-ups.
-3. **PINT-EU/UBL validation prototype:** keep syntax, Schematron and code-list versions outside the domain model.
+3. **PINT-EU/UBL validation prototype — initial version implemented:** PINT-EU Billing 1.1.1 / UBL 2.1 manifest, secure XML boundary and bounded rules/code-list checks remain outside the domain model. Full official XSD and Schematron execution is the production follow-up.
 4. **Country CIUS/rule packs:** load versioned country and profile constraints without branching the canonical contract.
 5. **Lifecycle and audit:** persist invoice events, acknowledgements, validation evidence and rule versions.
 6. **HU-ViDA adapter:** wait for final Hungarian XSD, API and DRR specifications before production implementation.

@@ -1,9 +1,9 @@
 {
   "sourceId": "EU-VIDA-OVERVIEW",
-  "fetchedAt": "2026-09-11T08:03:16.451Z",
+  "fetchedAt": "2026-09-22T08:32:31.347Z",
   "finalUrl": "https://taxation-customs.ec.europa.eu/taxation/vat/vat-digital-age-vida_en",
   "httpStatus": 200,
   "contentType": "text/html; charset=UTF-8",
-  "sha256": "cddfc999bc45a4a3c6196243eca66f9ee46b7f87f9e12ba788255850b3e4b037",
-  "normalizedCharacters": 8533
+  "sha256": "78e09aa307d33cd573bc21af0fd57818961794a7070878f3c5ffd188130b125d",
+  "normalizedCharacters": 8551
 }

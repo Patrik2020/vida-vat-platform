@@ -147,10 +147,12 @@ The VAT in the Digital Age (ViDA) package has been adopted on 11 March 2025 foll
 Proposal by the European Commission of the VAT in the Digital Age Package
 On 8 December 2024, The Commission adopted its proposed VAT in the Digital Age (ViDA) reforms to modernise the European Union’s Value Added Tax (VAT) system and address the challenges posed by digitalisation.
 Implementation
-General publications 13 May 2026
 VAT in the Digital Age implementation – Work programme for 2026
-General publications 24 September 2025
+General publications
+13 May 2026
 Implementation Strategy - VAT in the Digital Age
+General publications
+24 September 2025
 Timeline VAT in the Digital Age
 Text version
 Immediately on entry into force of ViDA package: Member States can introduce obligatory e-invoicing under certain conditions. Improvements to Member States' controls of the Import One-Stop-Shop (IOSS)

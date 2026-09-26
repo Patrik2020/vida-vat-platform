@@ -154,6 +154,7 @@ Személyes adónaptár
 Válaszol a NAV
 Válaszol a NAV
 Háromgyerekes anyák kedvezménye
+Dízeltámogatás
 Az egyszerűsített foglalkoztatás változásai 2025-ben
 Online Számla eltérés
 Állandó meghatalmazás
@@ -532,6 +533,7 @@ Személyes adónaptár
 Üzemanyag-elszámolás
 Válaszol a NAV
 Háromgyerekes anyák kedvezménye
+Dízeltámogatás
 Az egyszerűsített foglalkoztatás változásai 2025-ben
 Online Számla eltérés
 Állandó meghatalmazás

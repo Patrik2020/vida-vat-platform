@@ -1,11 +1,11 @@
 {
-  "checkedAt": "2026-09-25T08:49:00.198Z",
+  "checkedAt": "2026-09-26T08:35:27.885Z",
   "repository": "Patrik2020/vida-vat-platform",
   "totals": {
     "sources": 7,
     "bootstrap": 0,
-    "unchanged": 3,
-    "changed": 1,
+    "unchanged": 2,
+    "changed": 2,
     "errors": 3
   },
   "results": [
@@ -19,27 +19,27 @@
     },
     {
       "sourceId": "HU-NAV-VAT-INDEX",
-      "status": "unchanged",
+      "status": "changed",
       "previousSha256": "5e2632c88014eb97ff1cec419747316b63413bca0de4670d19d7d4074533a42b",
-      "currentSha256": "5e2632c88014eb97ff1cec419747316b63413bca0de4670d19d7d4074533a42b",
-      "issueCreated": false,
-      "message": "No normalized content change detected."
+      "currentSha256": "685c43db8d7c83a543c54cf2fbb408316d1e027708d94a86d2f7bd50a93ecd11",
+      "issueCreated": true,
+      "message": "Change recorded; production rules were not modified."
     },
     {
       "sourceId": "HU-NAV-INFO-2026",
-      "status": "unchanged",
+      "status": "changed",
       "previousSha256": "5cb9d3cf01811a59caba6de1e8465193f821dafac62645b7ab543e3452fd5a71",
-      "currentSha256": "5cb9d3cf01811a59caba6de1e8465193f821dafac62645b7ab543e3452fd5a71",
-      "issueCreated": false,
-      "message": "No normalized content change detected."
+      "currentSha256": "655d262d84fff65988890c1b7f82fc51d52e713df001ad238767f6577c2ae975",
+      "issueCreated": true,
+      "message": "Change recorded; production rules were not modified."
     },
     {
       "sourceId": "EU-VIDA-OVERVIEW",
-      "status": "changed",
-      "previousSha256": "78e09aa307d33cd573bc21af0fd57818961794a7070878f3c5ffd188130b125d",
+      "status": "unchanged",
+      "previousSha256": "37dc436e68f3d4ebae443d9fc6575978841ecfeffeb640cf7f7a9a4deb31ce85",
       "currentSha256": "37dc436e68f3d4ebae443d9fc6575978841ecfeffeb640cf7f7a9a4deb31ce85",
-      "issueCreated": true,
-      "message": "Change recorded; production rules were not modified."
+      "issueCreated": false,
+      "message": "No normalized content change detected."
     },
     {
       "sourceId": "EU-VIDA-DIR-2025-516",

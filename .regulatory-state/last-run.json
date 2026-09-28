@@ -1,21 +1,21 @@
 {
-  "checkedAt": "2026-09-27T09:15:28.008Z",
+  "checkedAt": "2026-09-28T09:46:07.401Z",
   "repository": "Patrik2020/vida-vat-platform",
   "totals": {
     "sources": 7,
     "bootstrap": 0,
-    "unchanged": 6,
+    "unchanged": 4,
     "changed": 0,
-    "errors": 1
+    "errors": 3
   },
   "results": [
     {
       "sourceId": "HU-AFA-ACT",
-      "status": "error",
+      "status": "unchanged",
       "previousSha256": "2d6754ef2e64b4dbea1aafb5f6be361a39c35e73d2cfe7e04339dfd6da1bc0c7",
-      "currentSha256": null,
-      "issueCreated": true,
-      "message": "native fetch failed: fetch failed; curl/IPv4 fallback failed: Command failed: curl --ipv4 --fail --location --silent --show-error --max-time 25 --user-agent ViDA-Regulatory-Monitor/0.1 (+https://github.com/Patrik2020/vida-vat-platform) --header Accept: text/html,application/xhtml+xml,application/xml;q=0.9,text/plain;q=0.8,*/*;q=0.5 --header Accept-Language: hu-HU,hu;q=0.9,en;q=0.7 --write-out \n__VIDA_CURL_META__%{http_code}\t%{content_type}\t%{url_effective} https://njt.jog.gov.hu/eli/TV/2007/127/hu/html\ncurl: (28) Connection timed out after 25002 milliseconds\n"
+      "currentSha256": "2d6754ef2e64b4dbea1aafb5f6be361a39c35e73d2cfe7e04339dfd6da1bc0c7",
+      "issueCreated": false,
+      "message": "No normalized content change detected."
     },
     {
       "sourceId": "HU-NAV-VAT-INDEX",
@@ -43,27 +43,27 @@
     },
     {
       "sourceId": "EU-VIDA-DIR-2025-516",
-      "status": "unchanged",
+      "status": "error",
       "previousSha256": "d6634283ed06df6befe9574dce011c9909c66d3f77c37df75557ad12266d0ca5",
-      "currentSha256": "d6634283ed06df6befe9574dce011c9909c66d3f77c37df75557ad12266d0ca5",
+      "currentSha256": null,
       "issueCreated": false,
-      "message": "No normalized content change detected."
+      "message": "Normalized content is unexpectedly short (0 chars; expected at least 5000)."
     },
     {
       "sourceId": "EU-VIDA-REG-2025-517",
-      "status": "unchanged",
+      "status": "error",
       "previousSha256": "51e17e9281fcdbe973f63dc5896754b46c862f891eddda2215aa82670f205304",
-      "currentSha256": "51e17e9281fcdbe973f63dc5896754b46c862f891eddda2215aa82670f205304",
+      "currentSha256": null,
       "issueCreated": false,
-      "message": "No normalized content change detected."
+      "message": "Normalized content is unexpectedly short (0 chars; expected at least 3000)."
     },
     {
       "sourceId": "EU-VIDA-IMPL-2025-518",
-      "status": "unchanged",
+      "status": "error",
       "previousSha256": "6497aba8bd4c491ded4b2171f424d3ddec3d60ca8be6f9906c8616284b4df6a5",
-      "currentSha256": "6497aba8bd4c491ded4b2171f424d3ddec3d60ca8be6f9906c8616284b4df6a5",
+      "currentSha256": null,
       "issueCreated": false,
-      "message": "No normalized content change detected."
+      "message": "Normalized content is unexpectedly short (0 chars; expected at least 3000)."
     }
   ]
 }

@@ -293,6 +293,7 @@ Tájékoztatók
 Kimutatások és elszámolások
 Egyéb kötelezettség és költségvetési támogatás
 OSS belépés
+Adóinformatikai fejlesztések
 Online pénztárgépek
 Jövedéki adó
 Jövedéki adó
@@ -659,6 +660,7 @@ Tájékoztatók
 Kimutatások és elszámolások
 Egyéb kötelezettség és költségvetési támogatás
 OSS belépés
+Adóinformatikai fejlesztések
 Online pénztárgépek
 Jövedéki adó
 Jövedéki nyomtatványok

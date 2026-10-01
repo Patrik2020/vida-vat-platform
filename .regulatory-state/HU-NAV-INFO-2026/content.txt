@@ -293,6 +293,7 @@ Tájékoztatók
 Kimutatások és elszámolások
 Egyéb kötelezettség és költségvetési támogatás
 OSS belépés
+Adóinformatikai fejlesztések
 Online pénztárgépek
 Jövedéki adó
 Jövedéki adó
@@ -659,6 +660,7 @@ Tájékoztatók
 Kimutatások és elszámolások
 Egyéb kötelezettség és költségvetési támogatás
 OSS belépés
+Adóinformatikai fejlesztések
 Online pénztárgépek
 Jövedéki adó
 Jövedéki nyomtatványok
@@ -751,14 +753,14 @@ Egyéb adónemek, kötelezettségek
 48. Környezetvédelmi termékdíj 2026. 01. 23.
 2026.01.23.
 53. Népegészségügyi termékadó 2026. 01. 23.
-2026.01.21.
-67. A regisztrációs adóigazgatási eljárás általános szabályai 2026. 01. 21.
+2026.10.01.
+67. A regisztrációs adóigazgatási eljárás általános szabályai 2026.10.01.
 2026.02.02.
 68. Az innovációs járulék legfontosabb szabályai 2026. 02. 02.
 2026.05.18.
 92. Kisvállalati adó szabályozása 2026. 05. 18.
-2026.02.02.
-95. A belföldi gépjárművek adója 2026. 03. 18.
+2026.10.01.
+95. A belföldi gépjárművek adója 2026.10.01.
 2026.08.07.
 96. A kiskereskedelmi adó 2026. 08. 07.
 2026.02.20.
@@ -766,22 +768,22 @@ Egyéb adónemek, kötelezettségek
 Eljárási szabályok
 2026.01.22.
 01. Bejelentkezés a NAV-hoz: adószám és adóazonosító jel kiváltása 2026.01.22.
-2026.01.23.
-22.1. Adóhatósági igazolások 2026. 01. 23.
-2026.01.23.
-22.2. Bevételigazolás 2026. 01. 23.
+2026.10.01.
+22.1. Adóhatósági igazolások 2026. 10.01.
+2026.10.01.
+22.2. Bevételigazolás 2026. 10.01.
 2026.01.22.
 23. Önellenőrzés 2026.01.22.
 2026.01.26.
 24. Bevallási, adófizetési információk 2026.01.26.
-2026.02.03.
-30.1. Fizetési kedvezmények gazdálkodó szervezeteknek 2026. 02. 03.
-2026.03.18.
-30.2. Fizetési kedvezmények magánszemélyeknek és egyéni vállalkozóknak 2026. 03. 18.
+2026.10.01.
+30.1. Fizetési kedvezmények gazdálkodó szervezeteknek 2026.10.01.
+2026.10.01.
+30.2. Fizetési kedvezmények magánszemélyeknek és egyéni vállalkozóknak 2026. 10.01.
 2026.01.21.
 32. Az elektronikus ügyintézés és kapcsolattartás általános szabályai adóügyekben 2026.01.21.
-2026.01.23.
-33. NAV Infóvonal - 1819 (A NAV Ügyfél-tájékoztató és Ügyintéző Rendszere) 2026. 01. 23.
+2026.10.01.
+33. NAV Infóvonal - 1819 (A NAV Ügyfél-tájékoztató és Ügyintéző Rendszere) 2026.10.01.
 2026.01.21.
 35. Bankkártyás adófizetés 2026.01.21.
 2026.01.21.
@@ -792,8 +794,8 @@ Eljárási szabályok
 60. A végelszámolási eljárás tudnivalói 2026.05.14.
 2026.02.02.
 63. A kényszertörlési eljárással kapcsolatos tudnivalók 2026.02.02.
-2026.02.02.
-69. A magáncsődeljárással kapcsolatos adózási tudnivalók 2026.02.02.
+2026.10.01.
+69. A magáncsődeljárással kapcsolatos adózási tudnivalók 2026.10.01.
 2026.01.21.
 71. Az adózói minősítéssel kapcsolatos tudnivalók 2026. 01. 21.
 Illetékek
@@ -801,12 +803,12 @@ Illetékek
 19. A visszterhes vagyonátruházási illeték 2026. 01. 30.
 2026.02.02.
 20. Az öröklési illeték 2026. 02. 02.
-2026.01.21.
-34. Eljárási illeték a NAV eljárásaiban 2026. 01. 21.
-2026.01.15.
-36. A gépjármű és pótkocsi megszerzésére vonatkozó illetékszabályok 2026. 01. 15.
-2026.02.10.
-38. Az ajándékozási illeték 2026. 02. 10.
+2026.10.01.
+34. Eljárási illeték a NAV eljárásaiban 2026.10.01.
+2026.10.01.
+36. A gépjármű és pótkocsi megszerzésére vonatkozó illetékszabályok 2026.10.01.
+2026.10.01.
+38. Az ajándékozási illeték 2026.10.01.
 2026.02.04.
 44. A pénzügyi tranzakciós illeték 2026. 02. 04.
 2026.01.21.
@@ -843,8 +845,8 @@ Jövedéki adó, vám
 2026.01.21.
 90. Ellenőrzések és jogkövetkezmények a jövedéki szabályozásban 2026. 01. 21.
 Társasági adó
-2026.01.21.
-13. A nonprofit szervezetek adózása 2026.01.21.
+2026.10.01.
+13. A nonprofit szervezetek adózása 2026.10.01.
 2026.02.02.
 41. A társasági adó legfontosabb szabályai 2026. 02. 02.
 2026.07.28.
@@ -872,8 +874,8 @@ Személyi jövedelemadó és a foglalkoztatáshoz kapcsolódó járulékok, más
 12. A társas vállalkozások, társas vállalkozók, gazdasági társaságok vezető tisztségviselőinek járulék- és szociálishozzájárulásiadó-fizetése 2026. 01. 09.
 2026.02.12.
 25. Rendelkezés az szja 1 százalékáról 2026. 02. 12.
-2026.02.12.
-26. Jogosultság az szja 1 százalékára 2026. 02. 12.
+2026.10.01.
+26. Jogosultság az szja 1 százalékára 2026.10.01.
 2026.01.19.
 28. Társasházak adózása 2026.01.19.
 2026.01.05.
@@ -882,8 +884,8 @@ Személyi jövedelemadó és a foglalkoztatáshoz kapcsolódó járulékok, más
 47. A háztartási munka 2026. 01. 08.
 2026.01.16.
 49. A szociális hozzájárulási adó 2026. 01. 16.
-2026.01.15.
-72. A diákok munkavállalása 2026. 01. 15.
+2026.10.01.
+72. A diákok munkavállalása 2026.10.01.
 2026.03.19.
 73. Szja adóalap-kedvezmények 2026. 03. 19.
 2026.01.09.

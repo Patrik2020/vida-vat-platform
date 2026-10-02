@@ -768,8 +768,8 @@ Egyéb adónemek, kötelezettségek
 Eljárási szabályok
 2026.01.22.
 01. Bejelentkezés a NAV-hoz: adószám és adóazonosító jel kiváltása 2026.01.22.
-2026.10.01.
-22.1. Adóhatósági igazolások 2026. 10.01.
+2026.10.02.
+22.1. Adóhatósági igazolások 2026. 10.02.
 2026.10.01.
 22.2. Bevételigazolás 2026. 10.01.
 2026.01.22.

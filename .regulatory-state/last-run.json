@@ -1,11 +1,11 @@
 {
-  "checkedAt": "2026-10-02T09:45:43.897Z",
+  "checkedAt": "2026-10-03T09:08:46.832Z",
   "repository": "Patrik2020/vida-vat-platform",
   "totals": {
     "sources": 7,
     "bootstrap": 0,
-    "unchanged": 3,
-    "changed": 1,
+    "unchanged": 4,
+    "changed": 0,
     "errors": 3
   },
   "results": [
@@ -27,11 +27,11 @@
     },
     {
       "sourceId": "HU-NAV-INFO-2026",
-      "status": "changed",
-      "previousSha256": "eceffb1086fc222871eb562dc9b38191d6bf1e784b5f9c7c12ec56076fe370a9",
+      "status": "unchanged",
+      "previousSha256": "689afa3a018435335a8c82bd190ce0019e527b73fe767a22e6db8e55a1d202cb",
       "currentSha256": "689afa3a018435335a8c82bd190ce0019e527b73fe767a22e6db8e55a1d202cb",
-      "issueCreated": true,
-      "message": "Change recorded; production rules were not modified."
+      "issueCreated": false,
+      "message": "No normalized content change detected."
     },
     {
       "sourceId": "EU-VIDA-OVERVIEW",

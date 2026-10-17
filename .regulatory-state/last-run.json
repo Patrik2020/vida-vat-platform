@@ -1,12 +1,12 @@
 {
-  "checkedAt": "2026-10-16T08:10:29.414Z",
+  "checkedAt": "2026-10-17T07:47:28.776Z",
   "repository": "Patrik2020/vida-vat-platform",
   "totals": {
     "sources": 7,
     "bootstrap": 0,
-    "unchanged": 4,
+    "unchanged": 3,
     "changed": 0,
-    "errors": 3
+    "errors": 4
   },
   "results": [
     {
@@ -19,11 +19,11 @@
     },
     {
       "sourceId": "HU-NAV-VAT-INDEX",
-      "status": "unchanged",
+      "status": "error",
       "previousSha256": "adaf4535d350ed3f9581f1e429e1ff0b63b6d67d7a7c972462446425fa4c74f0",
-      "currentSha256": "adaf4535d350ed3f9581f1e429e1ff0b63b6d67d7a7c972462446425fa4c74f0",
+      "currentSha256": null,
       "issueCreated": false,
-      "message": "No normalized content change detected."
+      "message": "native fetch failed: fetch failed; curl/IPv4 fallback failed: Command failed: curl --ipv4 --fail --location --silent --show-error --max-time 25 --user-agent ViDA-Regulatory-Monitor/0.1 (+https://github.com/Patrik2020/vida-vat-platform) --header Accept: text/html,application/xhtml+xml,application/xml;q=0.9,text/plain;q=0.8,*/*;q=0.5 --header Accept-Language: hu-HU,hu;q=0.9,en;q=0.7 --write-out \n__VIDA_CURL_META__%{http_code}\t%{content_type}\t%{url_effective} https://nav.gov.hu/ado/afa\ncurl: (28) Connection timed out after 25002 milliseconds\n"
     },
     {
       "sourceId": "HU-NAV-INFO-2026",

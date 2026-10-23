@@ -1,21 +1,21 @@
 {
-  "checkedAt": "2026-10-22T08:36:17.907Z",
+  "checkedAt": "2026-10-23T08:32:09.456Z",
   "repository": "Patrik2020/vida-vat-platform",
   "totals": {
     "sources": 7,
     "bootstrap": 0,
     "unchanged": 3,
-    "changed": 0,
-    "errors": 4
+    "changed": 1,
+    "errors": 3
   },
   "results": [
     {
       "sourceId": "HU-AFA-ACT",
-      "status": "error",
+      "status": "changed",
       "previousSha256": "2d6754ef2e64b4dbea1aafb5f6be361a39c35e73d2cfe7e04339dfd6da1bc0c7",
-      "currentSha256": null,
-      "issueCreated": false,
-      "message": "native fetch failed: fetch failed; curl/IPv4 fallback failed: Command failed: curl --ipv4 --fail --location --silent --show-error --max-time 25 --user-agent ViDA-Regulatory-Monitor/0.1 (+https://github.com/Patrik2020/vida-vat-platform) --header Accept: text/html,application/xhtml+xml,application/xml;q=0.9,text/plain;q=0.8,*/*;q=0.5 --header Accept-Language: hu-HU,hu;q=0.9,en;q=0.7 --write-out \n__VIDA_CURL_META__%{http_code}\t%{content_type}\t%{url_effective} https://njt.jog.gov.hu/eli/TV/2007/127/hu/html\ncurl: (28) Connection timed out after 25002 milliseconds\n"
+      "currentSha256": "e0310bb592130cc35d4315b0da3a891ccd3cd1334d6b73b6891464fd77121fd0",
+      "issueCreated": true,
+      "message": "Change recorded; production rules were not modified."
     },
     {
       "sourceId": "HU-NAV-VAT-INDEX",

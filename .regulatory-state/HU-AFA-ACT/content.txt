@@ -1,4 +1,5 @@
 2007. évi CXXVII. törvény - Nemzeti Jogszabálytár
+Ugrás a keresőre
 Ugrás a tartalomra
 Nemzeti Jogszabálytár
 Magyar Jogi Információs Portál
@@ -27,6 +28,7 @@ Jogszabályfigyelő
 Változások követése
 Beállítások
 Kilépés
+Vissza a Jogszabálykeresőre
 Kifejezéskereső
 Nemzeti Jogszabálytár
 Oldalmenü
@@ -3825,8 +3827,11 @@ Felhasználási feltételek
 Akadálymentesítési nyilatkozat
 PDF
 Adatkezelési tájékoztató
+Süti beállítások
 © A Nemzeti Jogszabálytárban elérhető szövegek tekintetében az MKIFK Magyar Közlönykiadó és Igazságügyi Fordítóközpont Zrt. minden jogot fenntart!
 _
-A cookie-k segítenek szolgáltatásaink biztosításában. Szolgáltatásaink igénybevételével Ön beleegyezik a cookie-k használatába.
+A működéshez szükséges sütik mellett a Google Analytics statisztikai sütijeit, a munkamenet-azonosítót és a bejelentkezést csak az Ön hozzájárulásával használjuk. Döntését bármikor megváltoztathatja a lábléc „Süti beállítások” hivatkozásával.
 A cookie-k kezeléséről részletesebb információt ide kattintva olvashat.
 Elfogadom
+Nem változtatok
+Elutasítom

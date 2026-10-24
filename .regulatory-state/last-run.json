@@ -1,21 +1,21 @@
 {
-  "checkedAt": "2026-10-23T08:32:09.456Z",
+  "checkedAt": "2026-10-24T08:07:15.978Z",
   "repository": "Patrik2020/vida-vat-platform",
   "totals": {
     "sources": 7,
     "bootstrap": 0,
-    "unchanged": 3,
-    "changed": 1,
+    "unchanged": 4,
+    "changed": 0,
     "errors": 3
   },
   "results": [
     {
       "sourceId": "HU-AFA-ACT",
-      "status": "changed",
-      "previousSha256": "2d6754ef2e64b4dbea1aafb5f6be361a39c35e73d2cfe7e04339dfd6da1bc0c7",
+      "status": "unchanged",
+      "previousSha256": "e0310bb592130cc35d4315b0da3a891ccd3cd1334d6b73b6891464fd77121fd0",
       "currentSha256": "e0310bb592130cc35d4315b0da3a891ccd3cd1334d6b73b6891464fd77121fd0",
-      "issueCreated": true,
-      "message": "Change recorded; production rules were not modified."
+      "issueCreated": false,
+      "message": "No normalized content change detected."
     },
     {
       "sourceId": "HU-NAV-VAT-INDEX",

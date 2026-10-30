@@ -3,7 +3,6 @@ Skip to main content
 en
 Select your language
 Close
-EU official languages
 bg български
 es español
 cs čeština
@@ -28,12 +27,6 @@ sk slovenčina
 sl slovenščina
 fi suomi
 sv svenska
-Other languages
-ar العربية
-ja 日本語
-tr türkçe
-uk yкраїнська
-zh 中文
 Search
 Search
 Taxation and Customs Union

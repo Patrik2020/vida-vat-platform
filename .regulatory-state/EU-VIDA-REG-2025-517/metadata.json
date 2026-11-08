@@ -1,9 +1,9 @@
 {
   "sourceId": "EU-VIDA-REG-2025-517",
-  "fetchedAt": "2026-09-01T04:59:01.282Z",
+  "fetchedAt": "2026-11-08T10:21:35.260Z",
   "finalUrl": "https://eur-lex.europa.eu/eli/reg/2025/517/oj",
   "httpStatus": 200,
   "contentType": "text/html; charset=UTF-8",
-  "sha256": "51e17e9281fcdbe973f63dc5896754b46c862f891eddda2215aa82670f205304",
-  "normalizedCharacters": 51233
+  "sha256": "ea8db4cc82cfca032650cd2a1f48a1fff0a7b8b4c3fc8ada5a7ae2ebe0d24257",
+  "normalizedCharacters": 51260
 }

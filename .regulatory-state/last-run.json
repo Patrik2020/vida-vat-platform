@@ -1,12 +1,12 @@
 {
-  "checkedAt": "2026-11-07T10:07:05.814Z",
+  "checkedAt": "2026-11-08T10:21:35.260Z",
   "repository": "Patrik2020/vida-vat-platform",
   "totals": {
     "sources": 7,
     "bootstrap": 0,
     "unchanged": 4,
-    "changed": 0,
-    "errors": 3
+    "changed": 3,
+    "errors": 0
   },
   "results": [
     {
@@ -43,27 +43,27 @@
     },
     {
       "sourceId": "EU-VIDA-DIR-2025-516",
-      "status": "error",
+      "status": "changed",
       "previousSha256": "d6634283ed06df6befe9574dce011c9909c66d3f77c37df75557ad12266d0ca5",
-      "currentSha256": null,
-      "issueCreated": false,
-      "message": "Normalized content is unexpectedly short (0 chars; expected at least 5000)."
+      "currentSha256": "93a852eeee3e18614af7cc32b6279ef3c065d51b78596666940c1c42ffe5c4d1",
+      "issueCreated": true,
+      "message": "Change recorded; production rules were not modified."
     },
     {
       "sourceId": "EU-VIDA-REG-2025-517",
-      "status": "error",
+      "status": "changed",
       "previousSha256": "51e17e9281fcdbe973f63dc5896754b46c862f891eddda2215aa82670f205304",
-      "currentSha256": null,
-      "issueCreated": false,
-      "message": "Normalized content is unexpectedly short (0 chars; expected at least 3000)."
+      "currentSha256": "ea8db4cc82cfca032650cd2a1f48a1fff0a7b8b4c3fc8ada5a7ae2ebe0d24257",
+      "issueCreated": true,
+      "message": "Change recorded; production rules were not modified."
     },
     {
       "sourceId": "EU-VIDA-IMPL-2025-518",
-      "status": "error",
+      "status": "changed",
       "previousSha256": "6497aba8bd4c491ded4b2171f424d3ddec3d60ca8be6f9906c8616284b4df6a5",
-      "currentSha256": null,
-      "issueCreated": false,
-      "message": "Normalized content is unexpectedly short (0 chars; expected at least 3000)."
+      "currentSha256": "955ae966435b5d9dc3a1829bb00566e4f7ff1b1279624dfe9d11ffa5519af4e6",
+      "issueCreated": true,
+      "message": "Change recorded; production rules were not modified."
     }
   ]
 }

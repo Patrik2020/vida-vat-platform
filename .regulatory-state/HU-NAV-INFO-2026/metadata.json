@@ -1,9 +1,9 @@
 {
   "sourceId": "HU-NAV-INFO-2026",
-  "fetchedAt": "2026-10-02T09:45:43.897Z",
+  "fetchedAt": "2026-11-10T11:11:21.705Z",
   "finalUrl": "https://nav.gov.hu/ugyfeliranytu/nezzen-utana/inf_fuz/2026",
   "httpStatus": 200,
   "contentType": "text/html;charset=UTF-8",
-  "sha256": "689afa3a018435335a8c82bd190ce0019e527b73fe767a22e6db8e55a1d202cb",
+  "sha256": "bc11cfbb1818ad2e5cb0b2e84b41bd14d8f74e7d099091dc6e86bd65a1742ceb",
   "normalizedCharacters": 25574
 }

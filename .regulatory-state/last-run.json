@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-11-13T10:58:14.195Z",
+  "checkedAt": "2026-11-14T10:24:42.708Z",
   "repository": "Patrik2020/vida-vat-platform",
   "totals": {
     "sources": 7,
@@ -47,7 +47,7 @@
       "previousSha256": "93a852eeee3e18614af7cc32b6279ef3c065d51b78596666940c1c42ffe5c4d1",
       "currentSha256": null,
       "issueCreated": false,
-      "message": "Normalized content is unexpectedly short (0 chars; expected at least 5000)."
+      "message": "Normalized content is unexpectedly short (280 chars; expected at least 5000)."
     },
     {
       "sourceId": "EU-VIDA-REG-2025-517",
@@ -55,7 +55,7 @@
       "previousSha256": "ea8db4cc82cfca032650cd2a1f48a1fff0a7b8b4c3fc8ada5a7ae2ebe0d24257",
       "currentSha256": null,
       "issueCreated": false,
-      "message": "Normalized content is unexpectedly short (0 chars; expected at least 3000)."
+      "message": "Normalized content is unexpectedly short (280 chars; expected at least 3000)."
     },
     {
       "sourceId": "EU-VIDA-IMPL-2025-518",
@@ -63,7 +63,7 @@
       "previousSha256": "955ae966435b5d9dc3a1829bb00566e4f7ff1b1279624dfe9d11ffa5519af4e6",
       "currentSha256": null,
       "issueCreated": false,
-      "message": "Normalized content is unexpectedly short (0 chars; expected at least 3000)."
+      "message": "Normalized content is unexpectedly short (280 chars; expected at least 3000)."
     }
   ]
 }
